@@ -26,8 +26,9 @@ namespace MyCompany.TestArticy
 
         private void ConfigureTemplate(MacroCommandDescriptor aDescriptor, List<ObjectProxy> aSelectedobjects)
         {
-
-        }
+			ExportManager = ExportManager ?? new ExportManager(Session);
+			ExportManager.Export(ClassNameSource.TechnicalName);
+		}
 
 		public override List<MacroCommandDescriptor> GetMenuEntries(List<ObjectProxy> aSelectedObjects, ContextMenuContext aContext )
 		{

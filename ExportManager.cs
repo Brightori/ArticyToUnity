@@ -20,6 +20,7 @@ namespace MyCompany.TestArticy
     {
         private const string SCRIPTABLE_OBJECT = "";
         private const string MONO_BEHAVIOUR = "";
+        private const string PATH = "D:/Develop/ExportToUnity/ExportTest/";
 
         private List<string> mWrittenBaseClasses;
         private List<string> mWrittenTemplateClasses;
@@ -38,7 +39,7 @@ namespace MyCompany.TestArticy
             this.mSession = mSession;
         }
 
-        public void Export(string aOutputPath, CheckedListBox.CheckedItemCollection aTopics, ClassNameSource aClassNameSource)
+        public void Export(ClassNameSource aClassNameSource, string aOutputPath = PATH)
         {
             try
             {
@@ -51,6 +52,13 @@ namespace MyCompany.TestArticy
                 mExportedObjectCount = 0;
                 mExportedAssetCount = 0;
 
+                var aTopics = new List<string>
+                {
+                    "Flow",
+                    "Entities" ,
+                    "Assets",
+                };
+
                 // check output dir
                 DirectoryInfo outDir = new DirectoryInfo(aOutputPath);
                 if (!outDir.Exists)
@@ -59,12 +67,12 @@ namespace MyCompany.TestArticy
                     return;
                 }
 
-                var files = outDir.GetFiles("*.unity");
-                if (files.Length == 0)
-                {
-                    //mFramework.ShowError("The specified output directory does not contain a Unity project file! Please specify the asset directory of your Unity project.");
-                    return;
-                }
+                //var files = outDir.GetFiles("*.unity");
+                //if (files.Length == 0)
+                //{
+                //    //mFramework.ShowError("The specified output directory does not contain a Unity project file! Please specify the asset directory of your Unity project.");
+                //    return;
+                //}
 
                 DirectoryInfo pluginsDir = new DirectoryInfo(outDir.FullName + @"\Plugins");
                 if (!pluginsDir.Exists) pluginsDir.Create();

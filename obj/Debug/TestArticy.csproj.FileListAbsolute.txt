@@ -14,3 +14,7 @@ C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompan
 D:\Develop\TestArticy\TestArticy\obj\Debug\TestArticy.csproj.CoreCompileInputs.cache
 D:\Develop\TestArticy\TestArticy\obj\Debug\MyCompany.TestArticy.dll
 D:\Develop\TestArticy\TestArticy\obj\Debug\MyCompany.TestArticy.pdb
+D:\Develop\ExportToUnity\obj\Debug\TestArticy.csprojAssemblyReference.cache
+D:\Develop\ExportToUnity\obj\Debug\TestArticy.csproj.CoreCompileInputs.cache
+D:\Develop\ExportToUnity\obj\Debug\MyCompany.TestArticy.dll
+D:\Develop\ExportToUnity\obj\Debug\MyCompany.TestArticy.pdb
