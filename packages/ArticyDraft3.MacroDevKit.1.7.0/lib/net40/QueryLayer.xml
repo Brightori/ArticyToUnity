@@ -1,0 +1,711 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>QueryLayer</name>
+  </assembly>
+  <members>
+    <member name="T:Articy.Api.IsObjectAllowed">
+      <summary>
+            delegate used to filter objects for the model picker
+            </summary>
+      <param name="aObject">the object to check</param>
+      <returns>
+        <c>true</c> if the object should appear in the picker, <c>false</c> otherwise</returns>
+    </member>
+    <member name="T:Articy.Api.ObjectPropertyInfo">
+      <summary>
+            This class aggregates information about a single property that is exposed from ObjectProxy 
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectPropertyInfo.DataSubType">
+      <summary>
+            The data type of the object
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectPropertyInfo.DataType">
+      <summary>
+            The data type of the object
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectPropertyInfo.DisplayName">
+      <summary>
+            the display name of the property
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectPropertyInfo.EnumDisplayNames">
+      <summary>
+            if the property is an enum, this member is not null and contains an dictionary to look up display names of enum technical names.
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectPropertyInfo.EnumValues">
+      <summary>
+            if the property is an enum, this member is not null and contains an dictionary to look up technical/symbol names for given enum values
+            </summary>
+    </member>
+    <member name="M:Articy.Api.ObjectPropertyInfo.GetDisplayNameOfEnumValue(System.Object)">
+      <summary>
+            Convenience method to convert a value from an enum property (as returned from the get indexer)
+            to its display name of the enumeration.
+            </summary>
+      <param name="aVal">the value taken from the object</param>
+      <returns>the technical name of the enum value or <c>null</c> if no name exists for the given value.</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectPropertyInfo.GetNameOfEnumValue(System.Object)">
+      <summary>
+            Convenience method to convert a value from an enum property (as returned from the get indexer)
+            to its technical name of the enumeration.
+            </summary>
+      <param name="aVal">the value taken from the object</param>
+      <returns>the technical name of the enum value or <c>null</c> if no name exists for the given value.</returns>
+    </member>
+    <member name="P:Articy.Api.ObjectPropertyInfo.IsCalculated">
+      <summary>
+            Denotes if the property is calculated from other properties.
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectPropertyInfo.IsCustomProperty">
+      <summary>
+            Denotes if the property was introduced by an feature (<c>true</c>) or is a property that is exposed by the object itself (<c>false</c>)
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectPropertyInfo.Name">
+      <summary>
+            the name of the property
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectPropertyInfo.ReadOnly">
+      <summary>
+            Denotes if the property can be changed. This member is fixed for a property an never changes.
+            
+            The ReadOnly member of <see cref="T:Articy.Api.ObjectProxy" /> can change its state when the object is claimed.
+            All calculated or synthetic properties are always readonly, some other properties might be readonly to preserve data consistency.
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectPropertyInfo.SupportsExpressoScript">
+      <summary>
+            Denotes if the property can be parsed as expresso-script (only used by text properties)
+            </summary>
+    </member>
+    <member name="T:Articy.Api.ObjectProxy">
+      <summary>
+            Represents one articy:draft object like it is shown in the articy:draft GUI.
+            </summary>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.AddAttachmentToStrip(System.String,Articy.Api.ObjectProxy)">
+      <summary>
+            Adds an attachment to a reference strip of the object.
+            </summary>
+      <param name="aPropertyName">the name of the property of the type <see cref="F:Articy.Api.PropertyDataType.ObjectList" /></param>
+      <param name="aAttachment">the object that is to be attached at the end of the specified reference strip</param>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.AddInputPin">
+      <summary>
+            Adds a new input pin the the object, if it is "connectable" and the count did not have reached its limit.
+            </summary>
+      <returns>the created Pin object</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.AddOutputPin">
+      <summary>
+            Adds a new output pin the the object, if it is "connectable" and the count did not have reached its limit.
+            </summary>
+      <returns>the created Pin object</returns>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.CanBePartitioned">
+      <summary>
+            Returns true if this object is a togglable partition (can be created or retired).
+            Will return false in case of system folders as those are always a partition and cannot be retired.
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.CanHaveAttachments">
+      <summary>
+            All articy object types that can receive attachments inside a reference strip return <c>true</c>. 
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.CanHaveChildren">
+      <summary>
+        <c>true</c> for all object types that can have children as visible in the articy:draft navigator tree, otherwise <c>false</c></summary>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.ClearStrip(System.String)">
+      <summary>
+            Removes all attachments from the specified reference strip.
+            </summary>
+      <param name="aPropertyName">the name of the reference strip type property</param>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.FindIndex(System.String,Articy.Api.ObjectProxy)">
+      <summary>
+            Returns the column index of an attachment inside a certain reference strip.
+            </summary>
+      <param name="aPropertyName">the name of the reference strip type property</param>
+      <param name="aAttachment">the attachment, whose index is to be queried</param>
+      <returns>the index of the specified attachment inside the reference strip</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetAllowedChildrenTypes">
+      <summary>
+            Returns a HashSet containing all ObjectTypes that can appear as direct children of the given object
+            </summary>
+      <returns>A HashSet of ObjectTypes of the found types</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetAttachments">
+      <summary>
+            Returns a list ob ObjectProxy objects, each representing an attachment as can be seen in the articy:draft reference strip of the respective object.
+            </summary>
+      <returns>a list of attachments or <c>null</c> if the object cannot have attachments</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetAvailableProperties">
+      <summary>
+            Returns a list of all property names (type string), this object contains.
+            </summary>
+      <returns>a list of strings containing the names of all properties this object provides</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetAvailableProperties(Articy.Api.PropertyFilter)">
+      <summary>
+            Returns a list of all property names (type string), this object contains.
+            </summary>
+      <param name="aPropFilter">a filter that allows to show only base properties, template properties or all properties</param>
+      <returns>a list of strings containing the names of all properties this object provides</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetChildren">
+      <summary>
+            Returns a list ob ObjectProxy objects, each representing a child as can be seen in the articy:draft navigator tree.
+            </summary>
+      <returns>a list of children or <c>null</c> if the object is unable to have children</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetColor">
+      <summary>
+            Returns the object's "Color" property to the specified value.
+            </summary>
+      <returns>the current value of the "Color" property</returns>
+      <exception cref="T:Articy.Api.ArticyApiException">If the object does not have a Color property, error code <c>ErrorCode.PropertyNotFound</c> is thrown.</exception>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetColumnIndex(System.String)">
+      <summary>
+            Returns the column index of a property with the specified name.
+            </summary>
+      <param name="aPropertyName">property name e.g. "DisplayName"</param>
+      <returns>the column index</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetDataType(System.String)">
+      <summary>
+            Returns the data type of the property with the specified name.
+            </summary>
+      <param name="aProperty">the name of the property whose data type is to be queried</param>
+      <returns>the data type</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetDisplayName">
+      <summary>
+            Returns the name the object is typically displayed with in the articy:draft GUI (navigator, tiles/list view).
+            </summary>
+      <returns>the object's display name or <c>null</c> if the object has no display name</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetExternalId">
+      <summary>
+            Returns the object's property "ExternalId".
+            </summary>
+      <returns>the value of the ExternalId property or <c>null</c> if no such property exists for this object</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetFlowPosition">
+      <summary>
+            Gets the current position of a flow-item object
+            </summary>
+      <returns>the position</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetFlowSize">
+      <summary>
+            Gets the size of a flow flow-item object
+            </summary>
+      <returns>the current size of the object in the flow-view</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetInputPin(System.Int32)">
+      <summary>
+            returns the input pin with the given index
+            </summary>
+      <param name="aIndex">the pin index counted from top to bottom, starting with 0</param>
+      <returns>the given Pin ObjectProxy object</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetInputPins">
+      <summary>
+            Returns a list of ObjectProxy objects, each representing an input pin.
+            </summary>
+      <returns>the list of input pins ordered from top to bottom as displayed in the articy:draft flow editor</returns>
+      <exception cref="T:Articy.Api.ArticyApiException">If this method is called on an non-flow object the error code <c>ErrorCode.ObjectIsNotConnectable</c> is thrown.</exception>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetObjectContext(System.Boolean)">
+      <summary>
+            Gets the context is which this object appears
+            </summary>
+      <param name="aSystemFoldersOnly">Set to true of you are only interested in top-level contexts (only Documents &amp; Locations distinguish between the system folder and a main object)</param>
+      <returns>The value from the <see ref="ObjectContext" /> enumeration that matches the context. If no one matches <see ref="ObjectContext.Other" /> is returned.</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetObjectUrl">
+      <summary>
+            Gets the Url of the object
+            </summary>
+      <returns>the absolute object url using the articy:// protocol</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetOutputPin(System.Int32)">
+      <summary>
+            returns the output pin with the given index
+            </summary>
+      <param name="aIndex">the pin index counted from top to bottom, starting with 0</param>
+      <returns>the given Pin ObjectProxy object</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetOutputPins">
+      <summary>
+            Returns a list of ObjectProxy objects, each representing an output pin. 
+            </summary>
+      <returns>the list of output pins ordered from top to bottom as displayed in the articy:draft flow editor</returns>
+      <exception cref="T:Articy.Api.ArticyApiException">If this method is called on an non-flow object the error code <c>ErrorCode.ObjectIsNotConnectable</c> is thrown.</exception>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetParent">
+      <summary>
+            Returns an ObjectProxy object representing the direct parent in the object tree as displayed in the articy:draft navigator.
+            </summary>
+      <returns>the parent object or <c>null</c> if it is the project node</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetPartitionId">
+      <summary>
+            Returns the Guid of the partition, this object belongs to.
+            </summary>
+      <returns>the partition GUID</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetPreviewImage">
+      <summary>
+            Returns the asset that is set as preview image for this object.
+            </summary>
+      <returns>the asset object, that serves as preview image for this object</returns>
+      <exception cref="T:Articy.Api.ArticyApiException">If the object does not have a PreviewImage property, error code <c>ErrorCode.PropertyNotFound</c> is thrown.</exception>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetPropertyInfo(System.String)">
+      <summary>
+            Queries for extended property infos.
+            </summary>
+      <param name="aProperty">the name of the property whose information should be returned</param>
+      <returns>a class containing information about the property</returns>
+      <exception cref="T:Articy.Api.ArticyApiException">a PropertyNotFound error code may be thrown</exception>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetShortId">
+      <summary>
+            Returns the object's property "ShortId".
+            </summary>
+      <returns>the value of the ShortId property</returns>
+      <exception cref="T:Articy.Api.ArticyApiException">If the object does not have a ShortId property, error code <c>ErrorCode.PropertyNotFound</c> is thrown.</exception>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetStripElements(System.String)">
+      <summary>
+            Helper method to request a list of ObjectProxy objects for a property that is a list type.
+            </summary>
+      <param name="aPropertyName">the name of the property to query</param>
+      <returns>the list of objects specified by the given property</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetStripIds(System.String)">
+      <summary>
+            Helper method to request a set of object Ids for a given list property
+            </summary>
+      <param name="aPropertyName">the name of the property to query</param>
+      <returns>the list of object ids specified by the given property</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetStripMap(System.String)">
+      <summary>
+            Helper method to request a dictionary of objects keyed by their Id for a given list property
+            </summary>
+      <param name="aPropertyName">the name of the property to query</param>
+      <returns>the dictionary of objects keyed by their id</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetTechnicalName">
+      <summary>
+            Returns the technical name of the object.
+            </summary>
+      <returns>the object's technical name or <c>null</c> if the object does not have a technical name</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetTemplateId">
+      <summary>
+            Returns the template that is set for this object.
+            </summary>
+      <returns>the ID of the used template or <c>InstanceIdManager.InvalidIid</c> if no template was used or the object is not customizable at all</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetTemplateTechnicalName">
+      <summary>
+            Returns the technical name of the template that was assigned to this object.
+            </summary>
+      <returns>the technical name of the object's template or <c>null</c> if no template was set or the object is not customizable at all</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetText">
+      <summary>
+            Returns the object's property "Text". 
+            </summary>
+      <returns>the value of the Text property</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.GetText(Articy.Api.TextFormat)">
+      <summary>
+            Returns the object's property "Text" in the given format (Plain, HTML or BBCode)
+            </summary>
+      <param name="aFormat">The selected output format format</param>
+      <returns>the value of the Text property</returns>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.HasColor">
+      <summary>
+        <c>true</c> if the object has the "Color" property, otherwise <c>false</c></summary>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.HasDisplayName">
+      <summary>
+        <c>true</c> for all articy objects that have a display name, otherwise <c>false</c></summary>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.HasExternalId">
+      <summary>
+        <c>true</c> if the object has the "ExternalId" property, otherwise <c>false</c></summary>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.HasPreviewImage">
+      <summary>
+        <c>true</c> if the tiles view of the articy:draft GUI displays this object with an preview image, otherweise <c>false</c></summary>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.HasProperty(System.String)">
+      <summary>
+            Checks if the object contains a property with the specified name.
+            </summary>
+      <param name="aProperty">the name of the property to check</param>
+      <returns>
+        <c>true</c> if the object has the specified property, otherwise <c>false</c></returns>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.HasShortId">
+      <summary>
+        <c>true</c> if the object has the "ShortId" property, otherwise <c>false</c></summary>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.HasTechnicalName">
+      <summary>
+        <c>true</c> for all articy objects, that have a technical name
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.HasText">
+      <summary>
+        <c>true</c> if the object has the "Text" property, otherwise <c>false</c></summary>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.HoldsPartition">
+      <summary>
+            Returns true if the object is used as a partition root.
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.Id">
+      <summary>
+            the ID of this object
+            </summary>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.InsertAttachmentIntoStrip(System.String,Articy.Api.ObjectProxy,System.Int32)">
+      <summary>
+            Inserts the specified attachment into the specified reference strip
+            </summary>
+      <param name="aPropertyName">the name of the reference strip type property</param>
+      <param name="aAttachment">the attachment object to insert</param>
+      <param name="aIndex">the new index of the to-be-inserted attachment; <c>0</c> means, the attachment becomes the new first (leftmost) attachment moving all other attachments to the right</param>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.IsConnectable">
+      <summary>
+        <c>true</c> for all object types that can be displayed (and therefore connected) in the articy:draft flow editor (flow fragments, dialogs, dialogue fragments, jumps and hubs), <c>false</c> for all other types of objects
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.IsCustomizeable">
+      <summary>
+        <c>true</c> if this kind of object can have a template assigned, <c>false</c> otherwise
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.IsDisplayNameCalculated">
+      <summary>
+        <c>true</c> if the display name is calculated using the values of other properties and therefore is read-only, otherwise <c>false</c></summary>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.IsFolder">
+      <summary>
+            User folders and system folders return <c>true</c> all other articy object types return <c>false</c>.
+            </summary>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.IsInContext(Articy.Api.ObjectContext)">
+      <summary>
+            Method to check if a given object appears in the given context
+            </summary>
+      <param name="aContext">The context to check for</param>
+      <returns>
+        <c>true</c> if the object appears in the given context, <c>false</c> otherwise</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.IsInDocumentContext">
+      <summary>
+            Checks if the given object resides in a hierarchy under a Document object
+            </summary>
+      <returns>
+        <c>true</c> if the object is a child of a Document, <c>false</c> otherwise</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.IsInFlowContext">
+      <summary>
+            Checks if the given object resides in the flow
+            </summary>
+      <returns>
+        <c>true</c> if the object is a child of the Flow, <c>false</c> otherwise</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.IsInLocationContext">
+      <summary>
+            Checks if the given object resides in a hierarchy under a Location object
+            </summary>
+      <returns>
+        <c>true</c> if the object is a child of a Location, <c>false</c> otherwise</returns>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.IsReadOnly">
+      <summary>
+            Determines if the object can be written.
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.IsSystemFolder">
+      <summary>
+            System folders return <c>true</c> all other articy object types return <c>false</c>. 
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.IsUserFolder">
+      <summary>
+            User folders return <c>true</c> all other articy object types return <c>false</c>. 
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.IsValid">
+      <summary>
+        <c>true</c> if the object is a valid object with all properties and functionalities, <c>false</c> if it is a so-called 'broken reference'
+            </summary>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.IsValidExpressoScript(System.String)">
+      <summary>
+            Checks if the given string is a valid value for the property "Expression" of the object
+            </summary>
+      <param name="aScriptText">the new text</param>
+      <returns>
+        <tt>true</tt> if the string is valid or expresso script support is disabled for the project, <tt>false otherwise</tt></returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.IsValidExpressoScript(System.String,System.String)">
+      <summary>
+            Checks if the given string is a valid value for the named property (either object or feature property name) of the object
+            </summary>
+      <param name="aPropertyName">the name of the property to check</param>
+      <param name="aScriptText">the new text</param>
+      <returns>
+        <tt>true</tt> if the string is valid or expresso script support is disabled for the project, <tt>false otherwise</tt></returns>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.Item(System.Int32)">
+      <summary>
+            This indexer returns the property with the specified column index. 
+            </summary>
+      <param name="aColumnIndex">the index of the requested property's column</param>
+      <returns>The type of the return value depends on the type of property requested.</returns>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.Item(System.String)">
+      <summary>
+            This indexer returns the property with the specified property/column name. 
+            </summary>
+      <param name="aPropertyName">name of the requested property e.g. "DisplayName" or "Text"</param>
+      <returns>The type of the return value depends on the type of property requested.</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.MayAddAttachmentToStrip(System.String,Articy.Api.ObjectProxy)">
+      <summary>
+            Checks if an attachment is allowed to be added to a reference strip of the object.
+            </summary>
+      <param name="aPropertyName">the name of the property of the type <see cref="F:Articy.Api.PropertyDataType.ObjectList" /></param>
+      <param name="aAttachment">the object that is to be attached at the end of the specified reference strip</param>
+      <returns>True if adding is allowed.</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.MayInsertAttachmentIntoStrip(System.String,Articy.Api.ObjectProxy,System.Int32)">
+      <summary>
+            Checks if the specified attachment is allowed to by inserted into the specified reference strip
+            </summary>
+      <param name="aPropertyName">the name of the reference strip type property</param>
+      <param name="aAttachment">the attachment object to insert</param>
+      <param name="aIndex">the new index of the to-be-inserted attachment; <c>0</c> means, the attachment becomes the new first (leftmost) attachment moving all other attachments to the right</param>
+      <returns>True if inserting is allowed.</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.MaySetObjectReference(System.String,Articy.Api.ObjectProxy)">
+      <summary>
+            A helper method to check if a given object can be assigned to the object slot with the given property name
+            </summary>
+      <param name="aPropertyName">the name of the (slot) property field to set</param>
+      <param name="aAttachment">the value to check</param>
+      <returns></returns>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.ObjectType">
+      <summary>
+            This property tells, what type the encapsulated articy object really is.
+            </summary>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.RemoveAttachmentFromStrip(System.String,Articy.Api.ObjectProxy)">
+      <summary>
+            Removes the specified attachment from the specified reference strip.
+            </summary>
+      <param name="aPropertyName">the name of the reference strip type property</param>
+      <param name="aAttachment">the articy object that is to be removed from the reference strip</param>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.RemoveAttachmentFromStripAtIndex(System.String,System.Int32)">
+      <summary>
+            Removes the specified attachment from the specified reference strip.
+            </summary>
+      <param name="aPropertyName">the name of the reference strip type property</param>
+      <param name="aIndex">the index of the object inside the reference strip</param>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.RemoveInputPin(System.Int32)">
+      <summary>
+            Removes the given input pin of the, if it is "connectable", the index is in range the pin is not the last one.
+            </summary>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.RemoveOutputPin(System.Int32)">
+      <summary>
+            Removes the given output pin of the, if it is "connectable", the index is in range the pin is not the last one.
+            </summary>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.RunQuery(System.String)">
+      <summary>
+            Searches the opened project for articy objects. The object on which this query is executed can be referenced by the "self" query keyword
+            </summary>
+      <param name="aQuery">A string containing the query expression. See the "ArticyDraft API-Programmer's Guide.pdf" chapter 4 for details.</param>
+      <returns>a ResultSet object containing one row for every found articy object</returns>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.SetColor(System.Windows.Media.Color)">
+      <summary>
+            Sets the object's "Color" property to the specified value.
+            </summary>
+      <param name="aColor">the new value for the "Color" property</param>
+      <exception cref="T:Articy.Api.ArticyApiException">If the object does not have a Color property, error code <c>ErrorCode.PropertyNotFound</c> is thrown.</exception>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.SetDisplayName(System.String)">
+      <summary>
+            Sets the display name of the object to the specified value. 
+            </summary>
+      <param name="aDisplayName">the new display name that replaces the old one</param>
+      <exception cref="T:Articy.Api.ArticyApiException">If the object does not have a display name, the <c>ErrorCode.PropertyNotFound</c> is thrown.</exception>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.SetExternalId(System.String)">
+      <summary>
+            Sets the object's "ExternalId" property to the specified value.
+            </summary>
+      <param name="aExternalId">the new value for the ExternalId property</param>
+      <exception cref="T:Articy.Api.ArticyApiException">If the object does not have the "ExternalId" property, error code <c>ErrorCode.PropertyNotFound</c> is thrown.</exception>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.SetFlowPosition(System.Double,System.Double)">
+      <summary>
+            Sets the current position of a flow-item object
+            </summary>
+      <param name="aPosX">the x-position of the flow-item</param>
+      <param name="aPosY">the y-position of the flow-item</param>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.SetFlowPosition(System.Windows.Point)">
+      <summary>
+            Sets the current position of a flow-item object
+            </summary>
+      <param name="aPosition">the new position as Point struct</param>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.SetFlowSize(System.Double,System.Double)">
+      <summary>
+            Sets the size of a flow-item object. The given size if coerces to obey min/max size values for an object
+            </summary>
+      <param name="aWidth">the new desired width of the object</param>
+      <param name="aHeigt">the new desired height of the object</param>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.SetFlowSize(System.Windows.Size)">
+      <summary>
+            Sets the size of a flow-item object. The given size if coerces to obey min/max size values for an object
+            </summary>
+      <param name="aSize">the new size of the flow item given as Size struct</param>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.SetPreviewImage(Articy.Api.ObjectProxy)">
+      <summary>
+            Sets the preview image of this object to the specified value.
+            </summary>
+      <param name="aPreviewImage">the (image) asset object that is to become the new preview image of this object</param>
+      <exception cref="T:Articy.Api.ArticyApiException">If the object does not have a PreviewImage property, error code <c>ErrorCode.PropertyNotFound</c> is thrown.</exception>
+      <exception cref="T:Articy.Api.ArticyApiException">If the new value is no asset, error code <c>ErrorCode.InvalidValue</c> is thrown.</exception>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.SetShortId(System.Int32)">
+      <summary>
+            Sets the object's "ShortId" property to the specified value.
+            </summary>
+      <param name="aShortId">the new value for the ShortId property</param>
+      <exception cref="T:Articy.Api.ArticyApiException">If the object does not have a ShortId property, error code <c>ErrorCode.PropertyNotFound</c> is thrown.</exception>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.SetTechnicalName(System.String)">
+      <summary>
+            Sets the technical name of the object to the specified value.
+            </summary>
+      <param name="aTechnicalName">the new technical name for the object</param>
+      <exception cref="T:Articy.Api.ArticyApiException">If the object does not have a technical name the <c>ErrorCode.PropertyNotFound</c> is thrown.</exception>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.SetTemplate(System.String,System.Boolean)">
+      <summary>
+            Sets a new template for this object.
+            </summary>
+      <param name="aTechnicalName">the technical name of the new template or <c>null</c> or <c>""</c> to remove an already set template</param>
+      <param name="aSetColor">set to <c>false</c> if you do not want that the template change also changes the objects color</param>
+      <exception cref="T:Articy.Api.ArticyApiException">if the the specified technical name belongs to no valid template, <c>ErrorCode.UnknownTemplate</c> is thrown</exception>
+      <exception cref="T:Articy.Api.ArticyApiException">if the object is read-only, <c>ErrorCode.WriteDenied</c> is thrown</exception>
+      <exception cref="T:Articy.Api.ArticyApiException">if the object is not customizable, <c>ErrorCode.ObjectNotCustomizeable</c> is thrown</exception>
+      <exception cref="T:Articy.Api.ArticyApiException">if the the specified template is not allowed for this type of object, <c>ErrorCode.TemplateNotAllowedForObject</c> is thrown</exception>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.SetTemplate(System.UInt64,System.Boolean)">
+      <summary>
+            Sets a new template for this object.
+            </summary>
+      <param name="aId">the ID of the new template or <c>InstanceIdManager.InvalidIid</c> to remove an already set template</param>
+      <param name="aSetColor">set to <c>false</c> if you do not want that the template change also changes the objects color</param>
+      <exception cref="T:Articy.Api.ArticyApiException">if the the specified ID is no valid template, <c>ErrorCode.UnknownTemplate</c> is thrown</exception>
+      <exception cref="T:Articy.Api.ArticyApiException">if the object is read-only, <c>ErrorCode.WriteDenied</c> is thrown</exception>
+      <exception cref="T:Articy.Api.ArticyApiException">if the object is not customizable, <c>ErrorCode.ObjectNotCustomizeable</c> is thrown</exception>
+      <exception cref="T:Articy.Api.ArticyApiException">if the the specified template is not allowed for this type of object, <c>ErrorCode.TemplateNotAllowedForObject</c> is thrown</exception>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.SetText(System.String)">
+      <summary>
+            Sets the value of the property with the name "Text". 
+            </summary>
+      <param name="aText">the next value for the Text property</param>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.SetText(System.String,Articy.Api.TextFormat)">
+      <summary>
+            Sets the property "Text" from a string that has the given TextFormat
+            </summary>
+      <param name="aText">The Text to set;</param>
+      <param name="aFormat">The text format (Plain, HTML, BBCode)</param>
+    </member>
+    <member name="P:Articy.Api.ObjectProxy.TypeName">
+      <summary>
+            An untyped string that describes the object type. See <see cref="P:Articy.Api.ObjectProxy.ObjectType" /> for details.
+            </summary>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.ValidateExpressoScript(System.String)">
+      <summary>
+            Checks if the given string is a valid value for the property "Expression" of the object.
+            </summary>
+      <param name="aScriptText">the new text</param>
+    </member>
+    <member name="M:Articy.Api.ObjectProxy.ValidateExpressoScript(System.String,System.String)">
+      <summary>
+            Checks if the given string is a valid value for the named property (either object or feature property name) of the object
+            </summary>
+      <param name="aPropertyName">the name of the property to check</param>
+      <param name="aScriptText">the new text</param>
+    </member>
+    <member name="T:Articy.Api.ResultSet">
+      <summary>
+            This object is the container of objects that were found from a query.
+            It is also internally used to cache meta/schema data for all accessed properties
+            from elements in the row collection. This reduces the memory footprint and
+            gives some extra speed when having many object of the same type in the result set.
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ResultSet.Columns">
+      <summary>
+            the descriptors for the columns
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ResultSet.IdSet">
+      <summary>
+            the HashSet of all ids returned by this query
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ResultSet.RowMap">
+      <summary>
+            a Dictionary of all ids/rows returned by this query
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ResultSet.Rows">
+      <summary>
+            all rows found by the query that has produced this result set
+            </summary>
+    </member>
+  </members>
+</doc>

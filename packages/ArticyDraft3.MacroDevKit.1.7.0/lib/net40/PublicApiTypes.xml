@@ -1,0 +1,2426 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>PublicApiTypes</name>
+  </assembly>
+  <members>
+    <member name="T:Articy.Api.ApiConsts">
+      <summary>
+            static class that contains some constants and a error code helper method
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ApiConsts.ApiFacility">
+      <summary>
+            the facility number from API reported errors
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ApiConsts.ErrorCodeMask">
+      <summary>
+            the bit mask that can be applied to the ErrorCode of an <see cref="T:Articy.Api.ArticyApiException" /> to extract the error number
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ApiConsts.FacilityMask">
+      <summary>
+            the bitmask used to extract the facility number from the ErrorCode of an <see cref="T:Articy.Api.ArticyApiException" />. 
+            This mask must be applied after shifting down the bits.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ApiConsts.FacilityShift">
+      <summary>
+            the number of bits the facility bits are shifted up (left)
+            </summary>
+    </member>
+    <member name="M:Articy.Api.ApiConsts.MakeErrorCode(System.Int32,System.Int32)">
+      <summary>
+            helper method to combine a facility number and an error number to an error code
+            </summary>
+      <param name="aFacility">the facility that has reported the error</param>
+      <param name="aErrorNumber">the facility private error number</param>
+      <returns>an error code with the combined bits from facility and error number</returns>
+    </member>
+    <member name="F:Articy.Api.ApiConsts.MsgSrcApi">
+      <summary>
+            the message source used to report API related messages
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ApiConsts.MsgSrcSystem">
+      <summary>
+            the message source used to report "system" messages from the underlying articy:draft client
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ApiConsts.ServerFacility">
+      <summary>
+            the facility number for articy:server reported errors
+            </summary>
+    </member>
+    <member name="T:Articy.Api.ApiMode">
+      <summary>
+            Enum that specifies in which context the API is used
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ApiMode.Unknown">
+      <summary>
+            unknown context, should never reach an be seen by API code, only internally when the welcome screen or the Server-Administration-Mode is active
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ApiMode.Program">
+      <summary>
+            The API code runs as a stand-alone API program
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ApiMode.MultiUserPlugin">
+      <summary>
+            The code runs as plugin in a multi-user project
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ApiMode.SingleUserPlugin">
+      <summary>
+            The code runs as plugin in a single-user project
+            </summary>
+    </member>
+    <member name="T:Articy.Api.ArticyApiException">
+      <summary>
+            The standard exception used when the API has found an expected error
+            </summary>
+    </member>
+    <member name="M:Articy.Api.ArticyApiException.#ctor(Articy.Api.ErrorCode)">
+      <summary>
+            Create an API exception with a specific error code
+            </summary>
+      <param name="aErrorCode">an error code from the API error code enumeration</param>
+    </member>
+    <member name="M:Articy.Api.ArticyApiException.#ctor(Articy.Api.ErrorCode,System.Exception)">
+      <summary>
+            Create an API exception with a specific error code
+            </summary>
+      <param name="aErrorCode">an error code from the API error code enumeration</param>
+      <param name="aInnerException">an catched innter exception</param>
+    </member>
+    <member name="M:Articy.Api.ArticyApiException.#ctor(Articy.Api.ErrorCode,System.String)">
+      <summary>
+            Create an API exception with a specific error code
+            </summary>
+      <param name="aErrorCode">an error code from the API error code enumeration</param>
+      <param name="aMessage">The message to pass to the exception</param>
+    </member>
+    <member name="M:Articy.Api.ArticyApiException.#ctor(Articy.Api.ErrorCode,System.String,System.Exception)">
+      <summary>
+            Create an API exception with a specific error code
+            </summary>
+      <param name="aErrorCode">an error code from the API error code enumeration</param>
+      <param name="aMessage">The message to pass to the exception</param>
+      <param name="aInnerException">an catched innter exception</param>
+    </member>
+    <member name="M:Articy.Api.ArticyApiException.#ctor(System.Int32)">
+      <summary>
+            Create an API exception with a specific error code
+            </summary>
+      <param name="aErrorCode">the 32 bit error code with facility and error number</param>
+    </member>
+    <member name="M:Articy.Api.ArticyApiException.#ctor(System.Int32,System.Exception)">
+      <summary>
+            Create an API exception with a specific error code
+            </summary>
+      <param name="aErrorCode">the 32 bit error code with facility and error number</param>
+      <param name="aInnerException">an catched innter exception</param>
+    </member>
+    <member name="M:Articy.Api.ArticyApiException.#ctor(System.Int32,System.String)">
+      <summary>
+            Create an API exception with a specific error code
+            </summary>
+      <param name="aErrorCode">the 32 bit error code with facility and error number</param>
+      <param name="aMessage">The message to pass to the exception</param>
+    </member>
+    <member name="M:Articy.Api.ArticyApiException.#ctor(System.Int32,System.String,System.Exception)">
+      <summary>
+            Create an API exception with a specific error code
+            </summary>
+      <param name="aErrorCode">the 32 bit error code with facility and error number</param>
+      <param name="aMessage">The message to pass to the exception</param>
+      <param name="aInnerException">an catched innter exception</param>
+    </member>
+    <member name="P:Articy.Api.ArticyApiException.ErrorCode">
+      <summary>
+            The error code this exception encapsulates, upper 16 bit are facility code, lower 16 bits are the error number within that facility
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ArticyApiException.ErrorNumber">
+      <summary>
+            Getter that extracts the error number from the ErrorCode
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ArticyApiException.FacilityCode">
+      <summary>
+            Getter that extracts the facility from the ErrorCode
+            </summary>
+    </member>
+    <member name="P:Articy.Api.ArticyApiException.Message">
+      <summary>
+            The formatted message of this exception
+            </summary>
+    </member>
+    <member name="T:Articy.Api.CloseProgressMode">
+      <summary>
+            Enumeration that describes what to do with a progress window if its operation has finished
+            </summary>
+    </member>
+    <member name="F:Articy.Api.CloseProgressMode.Never">
+      <summary>
+            The progress window is never closed automatically
+            </summary>
+    </member>
+    <member name="F:Articy.Api.CloseProgressMode.NoError">
+      <summary>
+            The progress windows is closed if there are no error or warnings present
+            </summary>
+    </member>
+    <member name="F:Articy.Api.CloseProgressMode.Always">
+      <summary>
+            The progress window is always closed when the process has finished
+            </summary>
+    </member>
+    <member name="T:Articy.Api.ContextMenuContext">
+      <summary>
+            Is used as a context indicator when a MDK plugin requests a context menu.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ContextMenuContext.Other">
+      <summary>
+            Source is unspecified
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ContextMenuContext.Global">
+      <summary>
+            The context menu for the global ribbon entry was used (SelectedObjects is null)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ContextMenuContext.Navigator">
+      <summary>
+            The context menu was opened using a right click in the navigator tree
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ContextMenuContext.ContentArea">
+      <summary>
+            The context menu was opened using a right click on the content are (Flow, Location editor, ...)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ContextMenuContext.Search">
+      <summary>
+            The context menu was requested for a result set of a search from the navigator search tab
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ContextMenuContext.Conflicts">
+      <summary>
+            The context menu was requested for a result set of a search from the navigator conflict search tab
+            </summary>
+    </member>
+    <member name="T:Articy.Api.EntryType">
+      <summary>
+            Entry type of log messages
+            </summary>
+    </member>
+    <member name="F:Articy.Api.EntryType.Error">
+      <summary>
+            the message denotes an error
+            </summary>
+    </member>
+    <member name="F:Articy.Api.EntryType.Warning">
+      <summary>
+            the message denotes a warning
+            </summary>
+    </member>
+    <member name="F:Articy.Api.EntryType.Info">
+      <summary>
+            the message denotes a information
+            </summary>
+    </member>
+    <member name="F:Articy.Api.EntryType.Trace">
+      <summary>
+            the message is a trace entry
+            </summary>
+    </member>
+    <member name="F:Articy.Api.EntryType.Debug">
+      <summary>
+            the message is a debug output
+            </summary>
+    </member>
+    <member name="T:Articy.Api.ErrorCode">
+      <summary>
+            This enumeration contains error codes that are detected by the API
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NotInitialized">
+      <summary>
+            the API was not initialized before trying to create a session
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.AlreadyInitialized">
+      <summary>
+            tried to initialize more than one time
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.DotNetFrameworkNotFound">
+      <summary>
+            the required .NET framework was not found
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.Internal">
+      <summary>
+            thrown when an internal error occured in the a:d logic
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.GenericException">
+      <summary>
+            an unexpected exception from a lower level system was catched and wrapped
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ProjectNotFound">
+      <summary>
+            the project given to load is unknown (either missing rights, deleted or never existing)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.SourceControlError">
+      <summary>
+            an exception was catched that originates from source control (-&gt; see inner exception)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.UnknownServerError">
+      <summary>
+            an articy:server exception was catched but there is no RpcStatusCode available for a more detailed error
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.UnknownExport">
+      <summary>
+            the exports technical name is not known
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.InvalidExportDescriptior">
+      <summary>
+            failed to parse the export descriptor or missing export type in root element
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NotConnected">
+      <summary>
+            an command was issued that requires to be logged on
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ColumnNotFound">
+      <summary>
+            a column was not found on a given object
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.WriteDenied">
+      <summary>
+            writing to a row was denied because the row is read-only
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ObjectNotAvailable">
+      <summary>
+            an object that was encapsulated by an proxy does not exist any more
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.InvalidState">
+      <summary>
+            a call is impossible in the current object/project state
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.UnknownPartition">
+      <summary>
+            the given partition guid is unknown
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.PartitionNotClaimed">
+      <summary>
+            tried to unclaim a partition that the API user does not own
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.CantForcefullyUnclaimOwnPartition">
+      <summary>
+            tried to forcefully unclaim an own partition
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ProjectNotOpen">
+      <summary>
+            is thrown when a method expects an open project but there is no open project
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ProjectOpen">
+      <summary>
+            is thrown when a method expects that no open project exist but there is a open project
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.CantSetCalculatedProperty">
+      <summary>
+            tried to write a calculated property
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.PropertyNotFound">
+      <summary>
+            the given property does not exist for the given object
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.UnexpectedObjectClass">
+      <summary>
+            the given class was not expected to be API exposed
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ObjectNotCustomizeable">
+      <summary>
+            tried to set a feature value on a non customizable object
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NoTemplateSet">
+      <summary>
+            tried to set a feature value on a object without a set template
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.FeatureNotPresent">
+      <summary>
+            tried to set a feature value where the object does not contain that feature
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.CantSetStrip">
+      <summary>
+            a strip can't be set directly
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.UnsetObjectStrip">
+      <summary>
+            thrown when trying to access an unset object collection
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.UnknownDataType">
+      <summary>
+            a value getter or setter encountered an unknown data type
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.UnknownDataSubType">
+      <summary>
+            a value getter or setter encountered an unknown data sub type
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.InvalidValue">
+      <summary>
+            the given value is not allowed for setting it to a property
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ObjectCreationForbidden">
+      <summary>
+            it is forbidden to create an object of this type at this target
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.CantOpenProject">
+      <summary>
+            thrown when a project can't be opened
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NeedExclusiveModeToOpen">
+      <summary>
+            thrown when a project needs an exclusive mode to open but the flag was not set
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NotAllowedInExclusiveMode">
+      <summary>
+            thrown when partition actions are used in exclusive mode
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.UnknownTemplate">
+      <summary>
+            the referenced template does not exist (either name or ID)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.TemplateNotAllowedForObject">
+      <summary>
+            the template exists but is not allowed for the object
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.CantSetReadOnlyProperty">
+      <summary>
+            tried to set a property that is read-only
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.CantSetObjectAggregates">
+      <summary>
+            thrown when properties of data subtype "Model" are tried to be written by the API
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ObjectIsNotConnectable">
+      <summary>
+            thrown when a connectable object is needed (adding pins for example)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ForbiddenPinCount">
+      <summary>
+            thrown when a the operation would result in a forbidden pin count
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.FatalErrorDetected">
+      <summary>
+            thrown when a fatal error in the business logic was detected
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.UnsupportedObject">
+      <summary>
+            thrown when trying to access an object that is not allowed for API use
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.IndexOutOfRange">
+      <summary>
+            list access with index out of range
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ParentDoesNotAllowFolders">
+      <summary>
+            thrown by create folder if the parent does not allow it
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ObjectNull">
+      <summary>
+            thrown then a non-null object proxy was expected but null was found
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.InvalidParentForCreate">
+      <summary>
+            thrown when a object creation fails due to a wrong parents. E.g. Trying to import an Asset into an EntityUserFolder
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NeedMoreVertices">
+      <summary>
+            thrown when creating a path or polygon with violated minimum vertex count
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.WrongReferencedObjectType">
+      <summary>
+            thrown when wrong object type is assigned to an object reference (Link or Jump for example)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.InvalidTechnicalName">
+      <summary>
+            thrown when an internal error occurred in the a:d logic
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.DisplayNameMustNotBeEmpty">
+      <summary>
+            thrown when a display name is null, empty or only contains whitespace chars
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ParseException">
+      <summary>
+            thrown if parsing a query reported an error
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.AssetsNotReady">
+      <summary>
+            asset system is not clean and not ready for unclaim
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.PartitionClaimed">
+      <summary>
+            You tried to update a partition that you already have claimed 
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.InvalidDataFound">
+      <summary>
+            This error code denotes that a folder given as project folder contains a non matching project or no project at all
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.MissingProjectFolder">
+      <summary>
+            This error code is thrown when an open project does not know where to place the project data.
+            E.g. the project was never opened and no Project-Folder was given in the open args.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ExportFailed">
+      <summary>
+            This error code is thrown when an export could not completed successfully.
+            The reason may either be an unexpected exception from the lower layer or most likely an error condition 
+            that was also reported to the logging callback (if set)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.AssetObjectExpected">
+      <summary>
+            This error code is thrown when an asset object is expected but was not given.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.AssetFileNotFound">
+      <summary>
+            This error code is thrown when an asset 
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.DeleteNotAllowed">
+      <summary>
+            This error code is thrown when a delete is not allowed. 
+            This can be the case if an inner object is a partition root object.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.CantDeletePartitionRoot">
+      <summary>
+            This error is thrown when you try to delete an object that is the root of a partition
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.CantDeleteSystemFolder">
+      <summary>
+            This error is thrown when you try to delete a system folder object (e.g. Assets)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.WrongContextForDocument">
+      <summary>
+            operations on documents require a context object, that must be a document or a child of a document.
+            If this is not the case this exception is thrown.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.WrongContextObjctTypeForDocument">
+      <summary>
+            Only Documents &amp; TextObjects are allowed to have children in a document.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.InvalidHierarchyAdjustment">
+      <summary>
+            This error is thrown if the hierarchical placement of a new document element is not allowed.
+            e.g. Trying to add an TextObject as sibling of an Document object.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.DocumentObjectExpected">
+      <summary>
+            This error is thrown when an document object was expected as parameter but another was given.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ComponentLicenseMissing">
+      <summary>
+            This error is thrown when a functionality is used which needs a specific license, but this license is not present.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.InvalidQuery">
+      <summary>
+            This error is thrown when a calculated reference strip is accessed, but executing the query fails for some reason.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.InvalidVariableName">
+      <summary>
+            This error is thrown when the given full qualified variable name is malformed.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NameNotUnique">
+      <summary>
+            This error is thrown when a variable or variable set name is already used.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ExpressionError">
+      <summary>
+            This error is thrown when an expression contains an error.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NonScriptableProperty">
+      <summary>
+            This error is thrown when trying to validate an expression on a property that does not support scripting.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ObjectNotPartitionable">
+      <summary>
+            This error is thrown when trying to partition an object that cannot be a partition.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.RepartitioningFailed">
+      <summary>
+            This error is thrown when a repartitioning action failed.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.WrongObjectType">
+      <summary>
+            This object passed to a function is of the wrong or an unsupported object type
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ParentNotClaimed">
+      <summary>
+            This error code is throw when using accessing the position/sizing members of an flow-item and the parent-container 
+            object is not claimed.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.CantAddPin">
+      <summary>
+            This error code is throw when trying to add a pin to an object that either has no pins (e.g Entity), does not allow to add pins (e.g. Condition) or has reached the limit of allowed pins (currently 10)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.CantRemovePin">
+      <summary>
+            This error code is throw when trying to remove a pin from an object that has no pins (e.g. Entity) or does not allow to remove pins ( e.g. Condition)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.StandaloneMultiUserExpected">
+      <summary>
+            This error code is throw when trying execute session commands that are only available for stand-alone multi-user programs (e.g. OpenProject)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.MultiUserExpected">
+      <summary>
+            This error code is throw when trying execute session commands that are only available for multi-user API programs (e.g. GetUsers)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ServerExceptionCatched">
+      <summary>
+            An exception was catched, no detailed error reason available
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.MandatoryParameterMissing">
+      <summary>
+            The call could not be process because mandatory parameters were missing
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NotANumber">
+      <summary>
+            The parsing of a number failed
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.AccessDenied">
+      <summary>
+            The requesting user did not have the required rights to access/modify the requested information
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.InvalidServerState">
+      <summary>
+            The call could not be completed in the current server session state. (e.g. trying to login when a authenticated session already exists)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.DataInconsistent">
+      <summary>
+            Some consistency checks on the given parameter have failed
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.DatabaseException">
+      <summary>
+            An error from the database query layer has been catched
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NoSession">
+      <summary>
+            A method that expected an existing session was called, but the session is not available
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.RequestTimeout">
+      <summary>
+            The processing of a method did not return in time
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.RemoteRequestTimeout">
+      <summary>
+            The processing of an upsteam call (e.g. License-Server) did not return in time
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NoActiveConnection">
+      <summary>
+            There was not active connection at the time a call was issued.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ServerDbUnavailable">
+      <summary>
+            This error code is thrown if you try to login to an server which did not have its database ready
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ServerFail">
+      <summary>
+            generic error if the server reaches a code point where other checks already should have stopped the processing 
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.RemoteServerException">
+      <summary>
+            The processing of an upsteam call (e.g. License-Server) has thrown an exception.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.UserNotFound">
+      <summary>
+            the requested user was not found on the server or was deactivated
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.InvalidPassword">
+      <summary>
+            the password (hash) does not match
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.LoginNotAllowed">
+      <summary>
+            The login was denied because the same user has an active session from a different machine
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.CantCreateUser">
+      <summary>
+            The new user row can't be created because either the user already exists or no license is available
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.CantUpdateUser">
+      <summary>
+            The user row can't be updated because the login name conflicts with an already existing user
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ProjectNotFoundOnServer">
+      <summary>
+            The requested project was not found (or deactivated)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.CantOpenExclusive">
+      <summary>
+            The requested project can't be opened exclusive (already exclusively open elsewhere or locks are present)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ProjectAlreadyOpen">
+      <summary>
+            The server known that you have the project already open (it is not allowed to open the same project twice at the same time)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ClaimsPresent">
+      <summary>
+            When you try to claim an partition and that partition is already claimed, this error is thrown
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ProjectAlreadyOpenedExclusive">
+      <summary>
+            The project can't be opened because it already is open exclusive by another user
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ProjectDeactivated">
+      <summary>
+            You tried to open a deactivated project
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ProjectUnavailable">
+      <summary>
+            You tried to open an project that is temporarily unavailable (e.g. a ForcefullyUnclaimPartitions command is pending)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.UsersWorking">
+      <summary>
+            Tried to initiate a "forcefully unclaim all partitions" command while users are working in the project and you did not specify to kick those users
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NeedExclusiveModeToCleanup">
+      <summary>
+            Project needs an exclusive mode to cleanup
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.RepartitioningActive">
+      <summary>
+            Current operation can't be executed because the publishing/commiting of an repartitioning is pending.
+            Try again later.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NoClaimPresent">
+      <summary>
+            You tried to forcedully unclaim a partition that is not currently claimed
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NeedsFullUpdate">
+      <summary>
+            The project was repartitioned, before new claims can be taken, a full project update needs to be done.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NoLicense">
+      <summary>
+            You tried to log into a server that has no license. (SystemAdmin user can still log-in to fix this)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ServerLicenseExpired">
+      <summary>
+            The articy:server main product license has expired
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ServerLicenseAlreadyActivated">
+      <summary>
+            The articy:server was requested to activate a license, but is already licensed
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.LicenseKeyMismatch">
+      <summary>
+            The license update for the server returned a license key that was not requested (should never happen)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NoApiLicense">
+      <summary>
+            A user tried to login using the articy:draft API but the server was not licensed for API usage
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NoCAL">
+      <summary>
+            A user logged in that did not have a client access license assigned (either multi-user or viewer)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.DowngradeRequired">
+      <summary>
+            The server admin tries to change the license of a user to a more restrictive license (e.g. from "multi-user" to "viewer"),
+            but the user is member of a project and has access that is not covered by the requested license.
+            The downgrade is automatically done when the matching checkbox in the editing dialog is checked
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.InsufficientCAL">
+      <summary>
+            This error is returned when you try to give a user higher access than it current license allows (e.g. TeamMember level for a user with viewer license)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NoCALAvailable">
+      <summary>
+            This error is returned when you try to upgrade a user to a new CAL, but all free licenses are already used
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.Underlicensed">
+      <summary>
+            This error is returned when a user tries to log on an the CAL type the user owns has more licenses used than allowed.
+            This error only can arise with CALs that have an expiry date.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.CantEnterPartitioningMode">
+      <summary>
+            This error is returned when a user tries to enter the repartitioning mode, but another user already uses it.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.CantConnectArticyServer">
+      <summary>
+            This error is thrown when the given server can't be connected
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ArticyServerToOld">
+      <summary>
+            This error is thrown when the connected articy:server has a version that is to low to operate with
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.ArticyServerToNew">
+      <summary>
+            This error is thrown when the connected articy:server has a version that is to new to operate with
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ErrorCode.NoArticyServerInfoAvailable">
+      <summary>
+            This error is thrown when articy:draft was no possible to retrieve the server capability/version information
+            </summary>
+    </member>
+    <member name="T:Articy.Api.HierarchyAdjustment">
+      <summary>
+            Specifies the placement of a new document object in respect to the given context object.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.HierarchyAdjustment.AsUncle">
+      <summary>
+            Creates the element as sibling of the parent of the given context object (Hierarchy level -1)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.HierarchyAdjustment.AsSibling">
+      <summary>
+            Creates the new object directly after the given context element as sibling at the same hierarchy level (Hierarchy level +0)
+            and placing it directly after all the children of the context element.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.HierarchyAdjustment.AsChild">
+      <summary>
+            Creates the new object as the child of the context element. (Hierarchy level +1) This child is always the first child, any already existing child objects are moved down.
+            </summary>
+    </member>
+    <member name="T:Articy.Api.JourneyActionTypes">
+      <summary>
+            Available actions to take while recording a journey
+            </summary>
+    </member>
+    <member name="F:Articy.Api.JourneyActionTypes.Skip">
+      <summary>
+            Skips the children of this node and continues directly with its output pins.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.JourneyActionTypes.Next">
+      <summary>
+            Follows the path along with the next element.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.JourneyActionTypes.Submerge">
+      <summary>
+            Dives into the children of this node.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.JourneyActionTypes.Emerge">
+      <summary>
+            Dives out of the children back to the parent node.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.JourneyActionTypes.Branch">
+      <summary>
+            Identifies a branching option, multiple of these might be returned as an allowed action and each stands for one possible choice to advance the journey.
+            </summary>
+    </member>
+    <member name="T:Articy.Api.LoggingCallback">
+      <summary>
+            The delegate used to report logging information
+            </summary>
+      <param name="aMessageSource">the source of the message. Can either be one of the predefined sources 'System' or 'API' or 
+            a user given source name as found as <c>LogSourceName</c> in the parameter args objects required by some methods</param>
+      <param name="aType">the entry type of the message</param>
+      <param name="aText">the actual message text</param>
+    </member>
+    <member name="T:Articy.Api.ObjectContext">
+      <summary>
+            Specifies the context a given object resides.
+            The context is calculated by checking if the given object is a child of the matching system folder
+            </summary>
+    </member>
+    <member name="T:Articy.Api.ObjectPropertyNames">
+      <summary>
+            This class contains constants for all properties that are introduced by
+            the base objects of articy:draft.
+            
+            You can find type infos and restrictions in braces after the name
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.AbsoluteFilePath">
+      <summary>
+            the asset's qualified absolute file path including the currently used project folder. [string, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.AssetCategory">
+      <summary>
+            The category of the asset. [Enum (int), read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.AssetFilename">
+      <summary>
+            The filename of the asset in the project dir. only contains the name [string, read-only] 
+            deprecated use "Filename" instead
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.AssetState">
+      <summary>
+            The state of the asset (Ready, Importing, ...)
+            When using one the ApiSession.ImportAsset overloads you will discover state changes on the returned object
+            [enum (int), read-only, volatile]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Attachments">
+      <summary>
+            The name of the property containing the object's attachments.
+            This property can only be used with the object list management methods.
+            The list returned from <see cref="M:Articy.Api.ObjectProxy.GetAttachments" /> is only a read-only list containing current objects. [IList&lt;ObjectProxy&gt;]
+            
+            Check <see cref="P:Articy.Api.ObjectProxy.CanHaveAttachments" /> to check whether an object has this property. (E.g. Pin or Connections do not have this property)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.AutoDisplayNamePosition">
+      <summary>
+            Determines if the display name of an object should be positioned automatically. [boolean]
+             </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.BBCodeText">
+      <summary>
+            The Text/Description/Spoken text element of most objects as bb markup text [string]
+            
+            Check <see cref="P:Articy.Api.ObjectProxy.HasText" /> to check whether an object has this property. (E.g. Pin or Connections do not have this property)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.BooleanValue">
+      <summary>
+            A boolean evaluation of the default value. If the variable has integer type, 0 evaluates to false, any other to true
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Color">
+      <summary>
+             The color of the object [System.Windows.Media.Color]
+            
+             Check <see cref="P:Articy.Api.ObjectProxy.HasColor" /> to check whether an object has this property. (E.g. Pin or Connections do not have this property)
+             </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Content">
+      <summary>
+            The content of a Note in the XML markup notation.
+            The XML conforms the ScratchpadDocument.xsd.
+            [string, read-only, XML markup]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.CreatedBy">
+      <summary>
+            The name of the creator of the comment 
+            [string, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.CreatedOn">
+      <summary>
+            The timestamp of the creation of the comment in UTC time. 
+            [DateTime, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DataType">
+      <summary>
+            The data type of a variable. [Enum (int), e.g. Integer, Boolean]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DefaultValue">
+      <summary>
+            the string representation of the default value of a variable
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Description">
+      <summary>
+            The description of a variable. [string]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DisplayName">
+      <summary>
+            The display name as it can be seen in the navigator [string, non empty]
+            
+            Check <see cref="P:Articy.Api.ObjectProxy.HasDisplayName" /> to check whether an object has this property. (E.g. Connections do not have a DisplayName)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DisplayNameColor">
+      <summary>
+            The color of an object's display name. [System.Windows.Media.Color]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DisplayNameColorForImage">
+      <summary>
+            The color of an image's display name. [System.Windows.Media.Color]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DisplayNameColorForLink">
+      <summary>
+            The color of a link's display name. [System.Windows.Media.Color]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DisplayNameColorForPath">
+      <summary>
+            The color of a path's display name. [System.Windows.Media.Color]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DisplayNameColorForSpot">
+      <summary>
+            The color of a spot's display name. [System.Windows.Media.Color]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DisplayNameColorForZone">
+      <summary>
+            The color of a zone's display name. [System.Windows.Media.Color]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DisplayNamePosX">
+      <summary>
+            The X coordinate of a display name's position. [double]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DisplayNamePosY">
+      <summary>
+            The Y coordinate of a display name's position. [double]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DisplayNameSize">
+      <summary>
+            The size of an object's display name. [int]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DisplayNameSizeForImage">
+      <summary>
+            The size of an image's display name. [int]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DisplayNameSizeForLink">
+      <summary>
+            The size of a link's display name. [int]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DisplayNameSizeForPath">
+      <summary>
+            The size of a path's display name. [int]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DisplayNameSizeForSpot">
+      <summary>
+            The size of a spot's display name. [int]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DisplayNameSizeForZone">
+      <summary>
+            The size of a zone's display name. [int]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DropShadow">
+      <summary>
+            Determines if the drop shadow of an object's display name should be shown. [boolean]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DropShadowForImage">
+      <summary>
+            Determines if the display name drop shadow of an image should be shown. [boolean]
+             </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DropShadowForLink">
+      <summary>
+            Determines if the display name drop shadow of a link should be shown. [boolean]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DropShadowForPath">
+      <summary>
+            Determines if the display name drop shadow of a path should be shown. [boolean]
+             </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DropShadowForSpot">
+      <summary>
+            Determines if the display name drop shadow of a spot should be shown. [boolean]
+             </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DropShadowForText">
+      <summary>
+            Determines if a text's drop shadow should be shown. [boolean]
+             </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.DropShadowForZone">
+      <summary>
+            Determines if the display name drop shadow of a zone should be shown. [boolean]
+             </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.EndCap">
+      <summary>
+            Defines the ending element of a path.
+            [Enum (int), e.g. ColoredDot, None, LineArrowHead, FilledArrowHead, Diamond, Square, Disc]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Expression">
+      <summary>
+            A text field which is used as an expression.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ExternalId">
+      <summary>
+            The external Id as it can be found in the objects property sheet. [string]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.FileExtension">
+      <summary>
+            The file's extension. [string, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Filename">
+      <summary>
+            The filename of the asset in the project dir. only contains the name [string, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.FilePath">
+      <summary>
+            the asset's relative file path relative to the currently used project folder. [string, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.FileSize">
+      <summary>
+            The size of the asset on disk. [long, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.FileType">
+      <summary>
+            The file type as reported by the shell. [string, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.FillColor">
+      <summary>
+            The fill color of an object. [System.Windows.Media.Color]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ForcedHeight">
+      <summary>
+            Determines the fixed height of a location text object. [double]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ForcedWidth">
+      <summary>
+            Determines the fixed width of a location text object. [double]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ForObjectType">
+      <summary>
+            This property contains the type of object that is required to assign a given template to 
+            [Enum (int), read-only of type "ObjectType"]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Height">
+      <summary>
+            the Height of a flow-item.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Id">
+      <summary>
+            The Id of an asset. [ulong, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.IdxInJourney">
+      <summary>
+            The index this journey point has in the list of points in the Journey
+            [int, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ImageAsset">
+      <summary>
+            The asset of a location image. [ObjectProxy]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ImageOpacity">
+      <summary>
+            The opacity of a location image. [double, 0.0 - 1.0]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.JourneyPoints">
+      <summary>
+            a read-only list of JouneyPoint objects.
+            [IList&lt;ObjectProxy&gt;, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.JourneyPointType">
+      <summary>
+            The type of this point in the journey.
+            [Enum (int), read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.JourneyState">
+      <summary>
+            the state of the journey
+            [Enum (int)]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Label">
+      <summary>
+            The label text for the connection [string]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.LineWidth">
+      <summary>
+            Defines the line thickness of a path. [double]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.LinkStyleSize">
+      <summary>
+            Determines the style size for a link.
+            [Enum (int), e.g. Inherited, Large, Medium, Small]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.LinkStyleType">
+      <summary>
+            Determines the style type for a link.
+            [Enum (int), e.g. Inherited, PreviewImage, IconOnly, Minimal]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.MarkupText">
+      <summary>
+            The Text/Description/Spoken text element of most objects including all markup [string]
+            
+            Check <see cref="P:Articy.Api.ObjectProxy.HasText" /> to check whether an object has this property. (E.g. Pin or Connections do not have this property)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.MenuText">
+      <summary>
+            the preview/menu text of the dialog fragment.
+            [string]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Namespaces">
+      <summary>
+            a read-only list of Journey namespaces.
+            [IList&lt;ObjectProxy&gt;, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.NumericValue">
+      <summary>
+            A numeric (double) evaluation of the default value. If the variable has boolean type, false evaluates to 0.0, true to 1.0
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ObjectReference">
+      <summary>
+            describes which object is referenced by this journey point.
+            When "JourneyPointType" is one of "InputPinSelection", "OutputPinSelection" or "Pin",
+            the referenced object is a pin (whose parent is the owning object) otherwise its an
+            "normal" flow object.
+            [ObjectProxy, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ObjectType">
+      <summary>
+            The objects type name [enum, non empty]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.OriginalSource">
+      <summary>
+            The full filename of the location this asset was initially imported. [string, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.OutlineColor">
+      <summary>
+            The outline color of an object. [System.Windows.Media.Color]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.OutlineSize">
+      <summary>
+            The outline size of an object. [double]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.OutlineStyle">
+      <summary>
+            The outline style of an object. 
+            [Enum (int), e.g. Solid, Dot, Dash, DashDot, DashDotDot]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Parent">
+      <summary>
+            The object reference to the objects parent or <tt>null</tt> when object has no parent (like the project's root object).
+            
+            Connections are rooted in the container that also contain the other flow objects.
+            The parent of a Pin object is the flow object it is connected to
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.PartitionGuid">
+      <summary>
+            The Guid (as string) of the partition the object resides in (AD &gt; 3.1.3)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.PinIndex">
+      <summary>
+            The index of the pin in a top down order as it is connected to an element of the flow.
+            [int, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.PinType">
+      <summary>
+            The type of the pin. [Enum (int) e.g. Invalid, Input, Output]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.PosX">
+      <summary>
+            X position of a flow-item.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.PosY">
+      <summary>
+            Y position of a flow-item.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.PreviewImageAsset">
+      <summary>
+            some objects like zones or locations offer a preview image, you can set it using this parameter. [ObjectProxy, only Assets of type Image]
+            
+            Check <see cref="P:Articy.Api.ObjectProxy.HasPreviewImage" /> to check whether an object has this property. (E.g. Pin or Connections do not have this property)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ReachedByActionType">
+      <summary>
+            describes by what action this journey point was reached
+            [Enum (int), read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ScriptingName">
+      <summary>
+            The scripting name of an object. [string]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Selectability">
+      <summary>
+            Determines if an object is selectable.
+            [Enum (int), e.g. Unselectable, Selectable]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ShapeType">
+      <summary>
+            The type of a zone. 
+            [Enum (int) e.g. Invalid, Spot, Circle, Rectangle, Path, Polygon, Link ]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ShortId">
+      <summary>
+            The short/articy:access Id as it can be found in the objects property sheet. [int]
+            
+            Write with care to keep these Ids unique.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ShowCalculatedDisplayName">
+      <summary>
+            Determines if the calculated display name of an object should be shown. [boolean]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ShowDisplayName">
+      <summary>
+            Determines if the display name of an object should be shown. [boolean]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ShowDisplayNameForImage">
+      <summary>
+            Determines if the display name of an image should be shown. [boolean]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ShowDisplayNameForLink">
+      <summary>
+            Determines if the display name of a link should be shown. [boolean]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ShowDisplayNameForPath">
+      <summary>
+            Determines if the display name of a path should be shown. [boolean]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ShowDisplayNameForSpot">
+      <summary>
+            Determines if the display name of a spot should be shown. [boolean]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ShowDisplayNameForZone">
+      <summary>
+            Determines if the display name of a zone should be shown. [boolean]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ShowLabel">
+      <summary>
+            Determines if the label should be shown [boolean]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Source">
+      <summary>
+            The source object of the connection [ObjectProxy, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.SourcePin">
+      <summary>
+            The Pin object of the referenced source object of the connection [ObjectProxy, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Speaker">
+      <summary>
+            the speaking entity of the dialog fragment.
+            [ObjectProxy, "Entity" objects only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.SpotStyleSize">
+      <summary>
+            Determines the style type for a link.
+            [Enum (int), e.g. Inherited, Large, Medium, Small]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.SpotStyleType">
+      <summary>
+            Determines the style type for a spot. 
+            [Enum (int), e.g. Inherited, Flag, Cross]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.StageDirections">
+      <summary>
+            the stage directions of a dialog fragment
+            [string]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.StartCap">
+      <summary>
+            Defines the starting element of a path. 
+            [Enum (int), e.g. ColoredDot, None, LineArrowHead, FilledArrowHead, Diamond, Square, Disc]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.StringValue">
+      <summary>
+            A text (string) evaluation of the default value. A number will be tried to be represented as a string.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Target">
+      <summary>
+            The target object of a connection.
+            [ObjectProxy, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.TargetPin">
+      <summary>
+            The Pin object of the referenced target object of the connection.
+            [ObjectProxy, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.TechnicalName">
+      <summary>
+            The TechnicalName as it can be found in the objects property sheet [string, valid identifier names only]
+            
+            Check <see cref="P:Articy.Api.ObjectProxy.HasTechnicalName" /> to check whether an object has this property. (E.g. SystemFolder objects like "Entities" do not have technical names)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.TemplateName">
+      <summary>
+            The technical name of an objects template or an empty string if not template was set [string]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Text">
+      <summary>
+            The Text/Description/Spoken text element of most objects [string]
+            
+            Check <see cref="P:Articy.Api.ObjectProxy.HasText" /> to check whether an object has this property. (E.g. Pin or Connections do not have this property)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.TransformPivotX">
+      <summary>
+            The X coordinate of a transforms pivot position. [double]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.TransformPivotY">
+      <summary>
+            The Y coordinate of a transforms pivot position. [double]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.TransformRotation">
+      <summary>
+            The value of a transforms rotation in degrees. [double]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.TransformXAxisX">
+      <summary>
+            The X value of a transforms X-Axis vector. [double]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.TransformXAxisY">
+      <summary>
+            The Y value of a transforms X-Axis vector. [double]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.TransformYAxisX">
+      <summary>
+            The X value of a transforms Y-Axis vector. [double]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.TransformYAxisY">
+      <summary>
+            The Y value of a transforms Y-Axis vector. [double]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Url">
+      <summary>
+            the articy:// protocol Url of the object
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Variables">
+      <summary>
+            A read-only list of the variables of a variable set.
+            [IList&lt;ObjectProxy&gt;, read-only]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Visibility">
+      <summary>
+            Determines if an object is visible.
+            [Enum (int), e.g. Invisible, Visible]
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.Width">
+      <summary>
+            the width of a flow-item.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectPropertyNames.ZIndex">
+      <summary>
+            the z-index of a flow-item
+            </summary>
+    </member>
+    <member name="T:Articy.Api.ObjectType">
+      <summary>
+            This enumeration contains all object types available for API access.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.InvalidObjectReference">
+      <summary>
+            an object reference whose target does not exist
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Project">
+      <summary>
+            the root object of the project.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Flow">
+      <summary>
+            the flow system folder object.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Dialogue">
+      <summary>
+            the object is a Dialogue
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.DialogueFragment">
+      <summary>
+            the object is a DialogueFragment
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.FlowFragment">
+      <summary>
+            the object is a FlowFragment
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Comment">
+      <summary>
+            the object is a comment/annotation
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Jump">
+      <summary>
+            the object is a jump
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Hub">
+      <summary>
+            the object is a hub
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Condition">
+      <summary>
+            the object is a condition node
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Instruction">
+      <summary>
+            the object is an instruction node
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Connection">
+      <summary>
+            the object is a connection that connects two pins
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Pin">
+      <summary>
+            the object is a Pin 
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Locations">
+      <summary>
+            the locations system folder
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.LocationsUserFolder">
+      <summary>
+            a user created folder for locations
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Location">
+      <summary>
+            the object is a location
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.LayerFolder">
+      <summary>
+            the object is a location layer folder
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Link">
+      <summary>
+            the object is a Link (placed on a location)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Zone">
+      <summary>
+            the object is a Zone (placed on a location)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Path">
+      <summary>
+            the object is a Path (placed on a location)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Spot">
+      <summary>
+            the object is a Spot (placed on a location)
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Entities">
+      <summary>
+            the system folder for entities
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.EntitiesUserFolder">
+      <summary>
+            a user created folder for entities
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Entity">
+      <summary>
+            the object is an entity
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Journeys">
+      <summary>
+            the system folder for journeys
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.JourneysUserFolder">
+      <summary>
+            a user created folder for journeys
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Journey">
+      <summary>
+            the object is a journey
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.JourneyPoint">
+      <summary>
+            the object is a journey point
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Assets">
+      <summary>
+            the system folder for assets
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.AssetsUserFolder">
+      <summary>
+            a user created folder for journeys
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Asset">
+      <summary>
+            the object is a asset meta data object
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Documents">
+      <summary>
+            the system folder for documents
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.DocumentsUserFolder">
+      <summary>
+            a user created folder for Documents
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Document">
+      <summary>
+            the object is a document object
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.TextObject">
+      <summary>
+            the object is a text section of a document object
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.GlobalVariables">
+      <summary>
+            the object is the system folder for namespaces and global variables
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.VariableSet">
+      <summary>
+            the object is a namespace for global variables
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.Variable">
+      <summary>
+            the object is a global variable
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.LocationImage">
+      <summary>
+            an image object within the location
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.LocationText">
+      <summary>
+            a text object within the location
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ObjectType.LocationAnchor">
+      <summary>
+            a anchor object for texts / images in locations
+            </summary>
+    </member>
+    <member name="T:Articy.Api.ProjectRightLevel">
+      <summary>
+            right levels of users in projects
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ProjectRightLevel.NoRight">
+      <summary>
+            the user has no right on this project
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ProjectRightLevel.Guest">
+      <summary>
+            User has guest level access, only read access allowed.
+            A User that has a viewer license assigned always has this right level when assigned to a project
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ProjectRightLevel.Worker">
+      <summary>
+            User has worker access and can modify all normal objects
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ProjectRightLevel.Admin">
+      <summary>
+            User has project admin access and can:
+            - access project settings. (GUI only)
+            - Has the right to migrate the project to a newer version
+            - Is Allowed to manage project members (GUI only)
+            </summary>
+    </member>
+    <member name="T:Articy.Api.ProjectUnavailabilityReason">
+      <summary>
+            The reason why a project is currently not available
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ProjectUnavailabilityReason.NoObjections">
+      <summary>
+            no objections, project is available
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ProjectUnavailabilityReason.AlreadyOpened">
+      <summary>
+            Project is already opened by the same user, either on the same or different machine
+            </summary>
+    </member>
+    <member name="F:Articy.Api.ProjectUnavailabilityReason.TerminatePending">
+      <summary>
+            There is a partition termination pending that shortly disables the project for all users
+            </summary>
+    </member>
+    <member name="T:Articy.Api.PropertyDataSubType">
+      <summary>
+            a more detailed information about the data type
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataSubType.None">
+      <summary>
+            no sub-type is available
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataSubType.DependencyReference">
+      <summary>
+            The reference is a dependency reference
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataSubType.SimpleReference">
+      <summary>
+            The reference is a simple object reference
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataSubType.NativeReference">
+      <summary>
+            The reference comes from a native C# object,
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataSubType.Query">
+      <summary>
+            The reference list is the result of a query
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataSubType.Script">
+      <summary>
+            Property is a script text
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataSubType.ColorWithoutAlpha">
+      <summary>
+            A color without alpha channel
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataSubType.ColorWithAlpha">
+      <summary>
+            A color including alpha channel
+            </summary>
+    </member>
+    <member name="T:Articy.Api.PropertyDataType">
+      <summary>
+            known data types of fields/properties 
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataType.Unknown">
+      <summary>
+            property type is unknown
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataType.Text">
+      <summary>
+            property is of type text
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataType.Integer">
+      <summary>
+            property is an integer number type
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataType.Float">
+      <summary>
+            property is a floating point number
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataType.ObjectReference">
+      <summary>
+            property is a reference to an object
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataType.ObjectList">
+      <summary>
+            property is a list of references to other objects
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataType.Enum">
+      <summary>
+            property is an enumerated value
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataType.Boolean">
+      <summary>
+            property is a boolean value
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataType.Color">
+      <summary>
+            property is a color
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyDataType.DateTime">
+      <summary>
+            property is a date-time value
+            </summary>
+    </member>
+    <member name="T:Articy.Api.PropertyFilter">
+      <summary>
+            Flag based filter for <see cref="M:Articy.Api.ObjectProxy.GetAvailableProperties" /> of <see cref="T:Articy.Api.ObjectProxy" /></summary>
+    </member>
+    <member name="F:Articy.Api.PropertyFilter.None">
+      <summary>
+            get no properties
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyFilter.Base">
+      <summary>
+            only get properties from the underlying object
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyFilter.Custom">
+      <summary>
+            only get custom properties that were introduced by features
+            </summary>
+    </member>
+    <member name="F:Articy.Api.PropertyFilter.All">
+      <summary>
+            get all available properties
+            </summary>
+    </member>
+    <member name="T:Articy.Api.RepartitionMode">
+      <summary>
+            Specifies how repartitioning should work on the given objects
+            </summary>
+    </member>
+    <member name="F:Articy.Api.RepartitionMode.Create">
+      <summary>
+            Only create new partitions
+            </summary>
+    </member>
+    <member name="F:Articy.Api.RepartitionMode.Retire">
+      <summary>
+            Only retire existing partitions
+            </summary>
+    </member>
+    <member name="F:Articy.Api.RepartitionMode.Toggle">
+      <summary>
+            Retire if alrady a partition, create if not
+            </summary>
+    </member>
+    <member name="T:Articy.Api.SearchConflictsIn">
+      <summary>
+            Flag enum for searching for conflicts
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SearchConflictsIn.References">
+      <summary>
+            Searches for objects that have broken references
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SearchConflictsIn.FeatureValues">
+      <summary>
+            Searches for objects where custom feature values are invalid according to their constraints
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SearchConflictsIn.TechnicalNames">
+      <summary>
+            Searches for duplicate technical names within the content objects
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SearchConflictsIn.Asset">
+      <summary>
+            Searches for assets that are in a conflicting state
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SearchConflictsIn.ScriptExpressions">
+      <summary>
+            Searches for scripts that are in a conflicting state
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SearchConflictsIn.AnyConflict">
+      <summary>
+            searches for all of the above issues
+            </summary>
+    </member>
+    <member name="T:Articy.Api.SearchTextIn">
+      <summary>
+            Flag enum to specify where the simple text search should look up its strings
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SearchTextIn.Name">
+      <summary>
+            Searches in the display name property
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SearchTextIn.Description">
+      <summary>
+            searches in the Text/Description/Spoken Text property
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SearchTextIn.FeatureValues">
+      <summary>
+            searches in custom feature values, numbers are converted to strings before testing
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SearchTextIn.Pins">
+      <summary>
+            searches in the text of connected pins of flow objects
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SearchTextIn.OtherTexts">
+      <summary>
+            searches in other texts like technical names, Note content markup texts, stage directions, preview texts
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SearchTextIn.TechnicalName">
+      <summary>
+            searches in the technical name property
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SearchTextIn.AnyText">
+      <summary>
+            searches on all of the above places
+            </summary>
+    </member>
+    <member name="T:Articy.Api.SelectionContext">
+      <summary>
+            Used when reporting a selection to an MDK plugin
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SelectionContext.Other">
+      <summary>
+            can't be determined
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SelectionContext.Navigator">
+      <summary>
+            The navigator was used to select an object
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SelectionContext.Location">
+      <summary>
+            Objects where selected within the location editor
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SelectionContext.Flow">
+      <summary>
+            Objects were selected in the flow editor
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SelectionContext.ContentBrowser">
+      <summary>
+            Objects were selected in the content browser
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SelectionContext.Documents">
+      <summary>
+            Objects were selected in the document editor
+            </summary>
+    </member>
+    <member name="T:Articy.Api.SystemFolderNames">
+      <summary>
+            Technical names of system folders.
+            These names can be used in the FROM clause of a query and to get the folder object when using the 
+            <see cref="M:Articy.Api.ApiSession.GetSystemFolder(Articy.Api.SystemFolderNames)" /> method
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SystemFolderNames.Project">
+      <summary>
+            the root node of the project
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SystemFolderNames.Flow">
+      <summary>
+            the folder of all flow nodes
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SystemFolderNames.Entities">
+      <summary>
+            the entities root folder
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SystemFolderNames.Locations">
+      <summary>
+            the folder that contains locations
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SystemFolderNames.Documents">
+      <summary>
+            the folder that contains Documents
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SystemFolderNames.Assets">
+      <summary>
+            the folder that contains assets
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SystemFolderNames.Journeys">
+      <summary>
+            the folder that contains journeys
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SystemFolderNames.GlobalVariables">
+      <summary>
+            the folder that contains namespaces and variables
+            </summary>
+    </member>
+    <member name="F:Articy.Api.SystemFolderNames.TemplateDesign">
+      <summary>
+            the folder that contains template/feature design objects
+            </summary>
+    </member>
+    <member name="T:Articy.Api.TextFilterRelation">
+      <summary>
+            enumeration of filter relations used for <see cref="M:Articy.Api.ApiSession.SimpleFindObjects(System.UInt64,System.String,Articy.Api.TextFilterRelation,Articy.Api.SearchTextIn,System.Boolean)" /></summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.HasValue">
+      <summary>
+            text is present in the field(s) to search
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.IsEmpty">
+      <summary>
+            no text is present in the field(s) to search
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.Equal">
+      <summary>
+            the text in the field(s) to search equals the given value
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.NotEqual">
+      <summary>
+            the text in the field(s) to search differs the given value
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.Greater">
+      <summary>
+            the text in the field(s) to search is greater than the given value
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.LessOrEqual">
+      <summary>
+            the text in the field(s) to search is less than or equal to the given value
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.Less">
+      <summary>
+            the text in the field(s) to search is less than the given value
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.GreaterOrEqual">
+      <summary>
+            the text in the field(s) to search is greater as or equal to the given value
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.Contains">
+      <summary>
+            the text in the field(s) to search contains the given value
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.DoesNotContain">
+      <summary>
+            the text in the field(s) to search does not contains the given value
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.StartsWith">
+      <summary>
+            the text in the field(s) to search starts with the given value
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.DoesNotStartWith">
+      <summary>
+            the text in the field(s) to search does not start with the given value
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.EndsWith">
+      <summary>
+            the text in the field(s) to search ends with the given value
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.DoesNotEndWith">
+      <summary>
+            the text in the field(s) to search does not end with the given value
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.MatchRegex">
+      <summary>
+            the text in the field(s) to search matches the regular expression given
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFilterRelation.DoesNotMatchRegex">
+      <summary>
+            the text in the field(s) to search does not match the regular expression given
+            </summary>
+    </member>
+    <member name="T:Articy.Api.TextFormat">
+      <summary>
+            Enumeration to specify if which format the <see cref="M:Articy.Api.ObjectProxy.GetText(Articy.Api.TextFormat)" /> 
+            overload should format the returned text.
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFormat.Plain">
+      <summary>
+            Get or set the text as plain, unformatted text
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFormat.Html">
+      <summary>
+            Get or set the text as full HTML text with styles
+            </summary>
+    </member>
+    <member name="F:Articy.Api.TextFormat.BBCode">
+      <summary>
+            Get or set the text as BBCode enriched text
+            </summary>
+    </member>
+    <member name="T:Articy.Export.Office.ExportFeatureOrder">
+      <summary>
+            Determines the sort order of features in the XLSX exports
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportFeatureOrder.Alphabetical">
+      <summary>
+            Features are sorted ascending by their names (either display- or technical- name),
+            depending on "WhichName" setting. Then they a placed left to right
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportFeatureOrder.UsageCount">
+      <summary>
+            Features that are used more often (by the objects on that sheet) are shown first.
+            </summary>
+    </member>
+    <member name="T:Articy.Export.Office.ExportGroupedBy">
+      <summary>
+            Determines the grouping objects for XLSX exports
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportGroupedBy.Nothing">
+      <summary>
+            No groups are built
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportGroupedBy.Folder">
+      <summary>
+            Objects are grouped by their containing folder
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportGroupedBy.ObjectType">
+      <summary>
+            Objects are grouped by their type
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportGroupedBy.Template">
+      <summary>
+            Objects are grouped by their template
+            </summary>
+    </member>
+    <member name="T:Articy.Export.Office.ExportMethod">
+      <summary>
+            Specifies how the DOCX export genrates its documents
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportMethod.Multiple">
+      <summary>
+            Multiple documents are created, one for each object
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportMethod.Single">
+      <summary>
+            All objects are put into one document
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportMethod.List">
+      <summary>
+            One document is created, the output format is a compact list like form
+            </summary>
+    </member>
+    <member name="T:Articy.Export.Office.ExportSortedBy">
+      <summary>
+            Determines the sort criteria for the objects for DOCX &amp; XLSX exports.
+            For XLSX export the sorting is applied after the objects are grouped.
+            So each group is sorted separately.
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportSortedBy.DisplayName">
+      <summary>
+            The objects are sorted by their "DisplayName"
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportSortedBy.TechnicalName">
+      <summary>
+            The objects are sorted by their "TechnicalName"
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportSortedBy.ObjectType">
+      <summary>
+            The objects are sorted by their object type
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportSortedBy.Template">
+      <summary>
+            The objects are sorted by their template name
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportSortedBy.ProjectPath">
+      <summary>
+            The objects are sorted based on the path in the navigator tree
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportSortedBy.NavigatorOrder">
+      <summary>
+            Sort the objects by Navigator order, this is mostly by Displayname but different for locations &amp; documents.
+            </summary>
+    </member>
+    <member name="T:Articy.Export.Office.ExportVariableOrder">
+      <summary>
+            Determines which names should be exported in XLSX exports.
+            Is applied to variable names
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportVariableOrder.ScriptingName">
+      <summary>
+            sort ascending by ScriptingName
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportVariableOrder.Namespace">
+      <summary>
+            sort ascending by Namespace
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportVariableOrder.DataType">
+      <summary>
+            sort ascending by DataType
+            </summary>
+    </member>
+    <member name="T:Articy.Export.Office.ExportWhichName">
+      <summary>
+            Determines which names should be exported in XLSX exports.
+            Is applied to feature / property names in headlines and to object references in the content data area
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportWhichName.DisplayName">
+      <summary>
+            Use display names where possible
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.ExportWhichName.TechnicalName">
+      <summary>
+            use technical names where possible
+            </summary>
+    </member>
+    <member name="T:Articy.Export.Office.PageSize">
+      <summary>
+            Determines the pagesize in office documents
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.PageSize.A4">
+      <summary>
+            assume DIN A4 paper size for layouting
+            </summary>
+    </member>
+    <member name="F:Articy.Export.Office.PageSize.Letter">
+      <summary>
+            assume letter paper size for layouting
+            </summary>
+    </member>
+  </members>
+</doc>

@@ -1,0 +1,9 @@
+C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\Articy.ExportToUnityPlugin\1.0\AnyCPU\Resources\Icon.png
+C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\Articy.ExportToUnityPlugin\1.0\AnyCPU\PluginTexts.tpk
+C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\Articy.ExportToUnityPlugin\1.0\AnyCPU\PluginManifest.xml
+C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\Articy.ExportToUnityPlugin\1.0\AnyCPU\Articy.ExportToUnityPlugin.dll
+C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\Articy.ExportToUnityPlugin\1.0\AnyCPU\Articy.ExportToUnityPlugin.pdb
+D:\Develop\TestArticy\TestArticy\obj\Debug\Articy.ExportToUnityPlugin.csproj.CoreCompileInputs.cache
+D:\Develop\TestArticy\TestArticy\obj\Debug\Articy.ExportToUnityPlugin.dll
+D:\Develop\TestArticy\TestArticy\obj\Debug\Articy.ExportToUnityPlugin.pdb
+D:\Develop\TestArticy\TestArticy\obj\Debug\Articy.ExportToUnityPlugin.csprojAssemblyReference.cache

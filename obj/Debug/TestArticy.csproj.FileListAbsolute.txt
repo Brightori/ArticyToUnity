@@ -1,0 +1,16 @@
+F:\_proj\TestArticy\bin\Debug\PluginManifest.xml
+F:\_proj\TestArticy\bin\Debug\Resources\Icon.png
+F:\_proj\TestArticy\bin\Debug\PluginTexts.tpk
+F:\_proj\TestArticy\bin\Debug\MyCompany.TestArticy.dll
+F:\_proj\TestArticy\bin\Debug\MyCompany.TestArticy.pdb
+F:\_proj\TestArticy\obj\Debug\MyCompany.TestArticy.dll
+F:\_proj\TestArticy\obj\Debug\MyCompany.TestArticy.pdb
+F:\_proj\TestArticy\obj\Debug\TestArticy.csprojAssemblyReference.cache
+C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\PluginManifest.xml
+C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\Resources\Icon.png
+C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\PluginTexts.tpk
+C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\MyCompany.TestArticy.dll
+C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\MyCompany.TestArticy.pdb
+D:\Develop\TestArticy\TestArticy\obj\Debug\TestArticy.csproj.CoreCompileInputs.cache
+D:\Develop\TestArticy\TestArticy\obj\Debug\MyCompany.TestArticy.dll
+D:\Develop\TestArticy\TestArticy\obj\Debug\MyCompany.TestArticy.pdb
