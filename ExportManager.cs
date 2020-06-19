@@ -1,11 +1,9 @@
 ﻿using Articy.Api;
-using Articy.Models;
 using Articy.Utils.StaticUtils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using System.Windows.Forms;
 using System.Windows.Media;
 
 namespace MyCompany.TestArticy
@@ -18,7 +16,7 @@ namespace MyCompany.TestArticy
 
     public class ExportManager
     {
-        private const string SCRIPTABLE_OBJECT = "";
+        private const string SCRIPTABLE_OBJECT = "SriptableObject";
         private const string MONO_BEHAVIOUR = "";
         private const string PATH = "D:/Develop/ExportToUnity/ExportTest/";
 
@@ -29,7 +27,7 @@ namespace MyCompany.TestArticy
         private int mExportedObjectCount;
         private int mExportedAssetCount;
         private string mResourcesPath;
-
+        private Parser parser = new Parser();
 
         private readonly ApiSession mSession;
         private DirectoryInfo mClassDir;
@@ -57,6 +55,7 @@ namespace MyCompany.TestArticy
                     "Flow",
                     "Entities" ,
                     "Assets",
+                    "Locations",
                 };
 
                 // check output dir
@@ -1026,5 +1025,30 @@ namespace MyCompany.TestArticy
         public int PinIndex;
         public ObjectProxy Target;
         public int TargetSubmergeLevel;
+    }
+
+    public class Conversation
+    {
+        public List<ArticyEntity> DialogEntities = new List<ArticyEntity>(32);
+        public List<DialogStep> Dialogs = new List<DialogStep>(32);
+    }
+
+    public class ArticyEntity
+    {
+        public string Id;
+        public List<Emotion> Emotions = new List<Emotion>(8);
+    }
+
+    public class Emotion
+    {
+        public string ParentEntity;
+        public string EmotionId;
+        public string AnimationId;
+    }
+
+    public class DialogStep
+    {
+        public ArticyEntity ActiveEntity;
+        public DialogStep[] NextSteps;
     }
 }
