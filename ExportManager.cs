@@ -58,13 +58,20 @@ namespace MyCompany.TestArticy
                     "Locations",
                 };
 
-                // check output dir
-                DirectoryInfo outDir = new DirectoryInfo(aOutputPath);
-                if (!outDir.Exists)
+                var flow = mSession.RunQuery("SELECT * FROM Flow WHERE ObjectType=Dialogue");
+
+                foreach (var r in flow.Rows)
                 {
-                    //mFramework.ShowError("Output directory does not exist! Please specify the asset directory of your Unity project.");
-                    return;
+                    parser.Process(r);
                 }
+
+                // check output dir
+                //DirectoryInfo outDir = new DirectoryInfo(aOutputPath);
+                //if (!outDir.Exists)
+                //{
+                //    //mFramework.ShowError("Output directory does not exist! Please specify the asset directory of your Unity project.");
+                //    return;
+                //}
 
                 //var files = outDir.GetFiles("*.unity");
                 //if (files.Length == 0)
@@ -73,52 +80,52 @@ namespace MyCompany.TestArticy
                 //    return;
                 //}
 
-                DirectoryInfo pluginsDir = new DirectoryInfo(outDir.FullName + @"\Plugins");
-                if (!pluginsDir.Exists) pluginsDir.Create();
+                //DirectoryInfo pluginsDir = new DirectoryInfo(outDir.FullName + @"\Plugins");
+                //if (!pluginsDir.Exists) pluginsDir.Create();
 
-                DirectoryInfo articyDir = new DirectoryInfo(pluginsDir.FullName + @"\Articy");
-                if (!articyDir.Exists) articyDir.Create();
+                //DirectoryInfo articyDir = new DirectoryInfo(pluginsDir.FullName + @"\Articy");
+                //if (!articyDir.Exists) articyDir.Create();
 
-                mClassDir = new DirectoryInfo(articyDir.FullName + @"\Classes");
-                if (!mClassDir.Exists) mClassDir.Create();
+                //mClassDir = new DirectoryInfo(articyDir.FullName + @"\Classes");
+                //if (!mClassDir.Exists) mClassDir.Create();
 
-                // export flow);
-                if (aTopics.Contains("Flow"))
-                {
-                    var systemFolderFlow = mSession.GetSystemFolder(SystemFolderNames.Flow);
-                    var flowDir = new DirectoryInfo(articyDir.FullName + @"\Flow");
-                    if (!flowDir.Exists) flowDir.Create();
-                    ExportFlowFolder(systemFolderFlow, flowDir);
-                }
+                //// export flow);
+                //if (aTopics.Contains("Flow"))
+                //{
+                //    var systemFolderFlow = mSession.GetSystemFolder(SystemFolderNames.Flow);
+                //    var flowDir = new DirectoryInfo(articyDir.FullName + @"\Flow");
+                //    if (!flowDir.Exists) flowDir.Create();
+                //    ExportFlowFolder(systemFolderFlow, flowDir);
+                //}
 
-                // export entities
-                if (aTopics.Contains("Entities"))
-                {
-                    var systemFolderEntities = mSession.GetSystemFolder(SystemFolderNames.Entities);
-                    var entitiesDir = new DirectoryInfo(articyDir.FullName + @"\Entities");
-                    if (!entitiesDir.Exists) entitiesDir.Create();
-                    ExportEntityFolder(systemFolderEntities, entitiesDir);
-                }
+                //// export entities
+                //if (aTopics.Contains("Entities"))
+                //{
+                //    var systemFolderEntities = mSession.GetSystemFolder(SystemFolderNames.Entities);
+                //    var entitiesDir = new DirectoryInfo(articyDir.FullName + @"\Entities");
+                //    if (!entitiesDir.Exists) entitiesDir.Create();
+                //    ExportEntityFolder(systemFolderEntities, entitiesDir);
+                //}
 
-                // export locations
-                if (aTopics.Contains("Locations"))
-                {
-                    var systemFolderLocations = mSession.GetSystemFolder(SystemFolderNames.Locations);
-                    var locationsDir = new DirectoryInfo(articyDir.FullName + @"\Locations");
-                    if (!locationsDir.Exists) locationsDir.Create();
-                    ExportLocationFolder(systemFolderLocations, locationsDir);
-                }
+                //// export locations
+                //if (aTopics.Contains("Locations"))
+                //{
+                //    var systemFolderLocations = mSession.GetSystemFolder(SystemFolderNames.Locations);
+                //    var locationsDir = new DirectoryInfo(articyDir.FullName + @"\Locations");
+                //    if (!locationsDir.Exists) locationsDir.Create();
+                //    ExportLocationFolder(systemFolderLocations, locationsDir);
+                //}
 
-                // export assets
-                if (aTopics.Contains("Assets"))
-                {
-                    var systemFolderAssets = mSession.GetSystemFolder(SystemFolderNames.Assets);
-                    var assetsDir = new DirectoryInfo(articyDir.FullName + @"\Resources");
-                    mResourcesPath = assetsDir.FullName;
-                    if (!assetsDir.Exists) assetsDir.Create();
-                    ExportAssetsFolder(systemFolderAssets, assetsDir);
+                //// export assets
+                //if (aTopics.Contains("Assets"))
+                //{
+                //    var systemFolderAssets = mSession.GetSystemFolder(SystemFolderNames.Assets);
+                //    var assetsDir = new DirectoryInfo(articyDir.FullName + @"\Resources");
+                //    mResourcesPath = assetsDir.FullName;
+                //    if (!assetsDir.Exists) assetsDir.Create();
+                //    ExportAssetsFolder(systemFolderAssets, assetsDir);
 
-                }
+                //}
 
 
                 mSession.ShowMessageBox("Complete");
@@ -905,13 +912,7 @@ namespace MyCompany.TestArticy
                 {
                     case ObjectType.FlowFragment:
                     case ObjectType.Dialogue:
-                        CreateOrUpdateBaseClassScript(mClassDir, child, SCRIPTABLE_OBJECT);
-                        CreateOrUpdateTemplateClassScripts(mClassDir, child, featureProperties);
-                        CreateOrUpdateScriptFile(aFlowDir, child, featureProperties);
-
-                        DirectoryInfo subFolder = new DirectoryInfo(aFlowDir.FullName + "\\" + GetClassName(child));
-                        if (!subFolder.Exists) subFolder.Create();
-                        ExportFlowFolder(child, subFolder);
+                        parser.Process(child);
                         break;
 
                     case ObjectType.DialogueFragment:
@@ -947,7 +948,8 @@ namespace MyCompany.TestArticy
 
             return features;
         }
-        private static string GetFeaturePart(string aFullPropertyName)
+
+        public static string GetFeaturePart(string aFullPropertyName)
         {
             var segments = aFullPropertyName.Split('.');
             int cutPos = segments[0].Length;
@@ -1048,7 +1050,19 @@ namespace MyCompany.TestArticy
 
     public class DialogStep
     {
+        public string DisplayId;
+        public int Id;
+        public int Orientation;
+
+        public DialogStepType DialogStepType;
         public ArticyEntity ActiveEntity;
-        public DialogStep[] NextSteps;
+        public List<DialogStep> NextSteps;
+    }
+
+    public enum DialogStepType
+    {
+        Default = 0,
+        ReplyText = 1,
+        AdditionalTemplate = 2,
     }
 }
