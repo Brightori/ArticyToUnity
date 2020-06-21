@@ -1,41 +1,58 @@
 ﻿using Articy.Api;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace MyCompany.TestArticy
 {
     public class Parser
     {
-        public void Process(ObjectProxy child)
-        {
-            var childs = child.GetChildren();
-            
-            foreach (var c in childs)
-            {
-                if (c.CanHaveChildren)
-                {
-                    var cc = c.GetChildren();
-                    
-                    foreach(var childi in cc)
-                    {
-                        GetProperties(childi);
-                    }
-                }
+        private List<Conversation> conversations = new List<Conversation>(64);
 
-                GetProperties(c);
+        public void ProcessDialogues(ObjectProxy child)
+        {
+            var conversation = new Conversation();
+            conversations.Add(conversation);
+
+            var childs = child.GetChildren();
+
+            foreach (var c in childs)
+                GetDataForConversation(c, conversation);
+        }
+
+        private void GetDataForConversation(ObjectProxy objectProxy, Conversation conversation)
+        {
+            
+
+            switch (objectProxy.ObjectType)
+            {
+                case ObjectType.Connection:
+                    break;
+
+                case ObjectType.DialogueFragment:
+                    ProccessDialogueFragment(objectProxy, conversation);
+                    break;
             }
         }
 
-        private void GetProperties(ObjectProxy objectProxy)
+        private void ProccessDialogueFragment(ObjectProxy objectProxy, Conversation conversation)
         {
             var getProperties = objectProxy.GetAvailableProperties();
-            var t = objectProxy.GetDisplayName();
-            var templateName2 = objectProxy.GetTemplateTechnicalName();
-            //var image = objectProxy.GetPreviewImage();
-            //var imageId = image.GetDisplayName();
-            var attachments = objectProxy.GetAttachments();
+
+            var dialogue = new DialogStep();
+            conversation.Dialogs.Add(dialogue);
+
+            var displayName = objectProxy.GetDisplayName();
+            var templateName = objectProxy.GetTemplateTechnicalName();
+            var shortId = objectProxy.GetShortId();
+
+            dialogue.DisplayId = displayName;
+            dialogue.Id = shortId;
+
+            switch (templateName)
+            {
+                case "ReplyText":
+                    dialogue.DialogStepType = DialogStepType.ReplyText;
+                    break;
+            }
         }
     }
 }

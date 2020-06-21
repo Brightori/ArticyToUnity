@@ -62,7 +62,7 @@ namespace MyCompany.TestArticy
 
                 foreach (var r in flow.Rows)
                 {
-                    parser.Process(r);
+                    parser.ProcessDialogues(r);
                 }
 
                 // check output dir
@@ -912,7 +912,7 @@ namespace MyCompany.TestArticy
                 {
                     case ObjectType.FlowFragment:
                     case ObjectType.Dialogue:
-                        parser.Process(child);
+                        parser.ProcessDialogues(child);
                         break;
 
                     case ObjectType.DialogueFragment:
@@ -1055,8 +1055,9 @@ namespace MyCompany.TestArticy
         public int Orientation;
 
         public DialogStepType DialogStepType;
-        public ArticyEntity ActiveEntity;
+        public ArticyEntity CurrentEntity;
         public List<DialogStep> NextSteps;
+        public bool IsActive => DialogStepType == DialogStepType.ReplyText;
     }
 
     public enum DialogStepType
