@@ -4,38 +4,54 @@ using System.Collections.Generic;
 namespace MyCompany.TestArticy
 {
     [Serializable]
-    public class Conversation
+    public class ArticyConversation
     {
         public List<ArticyEntity> DialogEntities = new List<ArticyEntity>(32);
-        public List<DialogStep> Dialogs = new List<DialogStep>(32);
+        public List<ArticyDialogStep> Dialogs = new List<ArticyDialogStep>(32);
     }
 
     public class ArticyEntity
     {
         public string Id;
-        public List<Emotion> Emotions = new List<Emotion>(8);
+        public List<ArticyEmotion> Emotions = new List<ArticyEmotion>(8);
     }
 
-    public class Emotion
+    public class ArticyEmotion
     {
         public string ParentEntity;
-        public string EmotionId;
+        public long EmotionId;
+        public string EmotionName;
+        public string EmotionFileName;
+    }
+
+    public class ArticyAnimation
+    {
+        public string UsedAnimation = string.Empty;
+        public List<string> SettedBools = new List<string>(4);
+
+        public float WaitForStart = 0;
+        public float BoolTimeOut = 5;
+
+        public string IntParamName = string.Empty;
+        public int IntParamValue = 0;
+
+        public string FloatParamName = string.Empty;
+        public float FloatParamValue = 0;
     }
 
     [Serializable]
-    public class DialogStep
+    public class ArticyDialogStep
     {
         public string DisplayId;
-        public string TechId;
         public long Id;
 
         public string Text;
         public int Orientation;
 
-        public Emotion Emotion = new Emotion();
+        public ArticyEmotion Emotion = new ArticyEmotion();
         
         public DialogStepType DialogStepType;
-        public List<DialogStep> NextSteps = new List<DialogStep>(4);
+        public List<ArticyDialogStep> NextSteps = new List<ArticyDialogStep>(4);
 
         public bool IsActive => DialogStepType == DialogStepType.ReplyText;
     }
@@ -45,5 +61,6 @@ namespace MyCompany.TestArticy
         Default = 0,
         ReplyText = 1,
         AdditionalEmotion = 2,
+        BubbleText = 3,
     }
 }
