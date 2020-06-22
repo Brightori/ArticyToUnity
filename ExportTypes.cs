@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace MyCompany.TestArticy
 {
+    [Serializable]
     public class Conversation
     {
         public List<ArticyEntity> DialogEntities = new List<ArticyEntity>(32);
@@ -18,18 +20,23 @@ namespace MyCompany.TestArticy
     {
         public string ParentEntity;
         public string EmotionId;
-        public string AnimationId;
     }
 
+    [Serializable]
     public class DialogStep
     {
         public string DisplayId;
-        public int Id;
+        public string TechId;
+        public long Id;
+
+        public string Text;
         public int Orientation;
 
+        public Emotion Emotion = new Emotion();
+        
         public DialogStepType DialogStepType;
-        public ArticyEntity CurrentEntity;
-        public List<DialogStep> NextSteps;
+        public List<DialogStep> NextSteps = new List<DialogStep>(4);
+
         public bool IsActive => DialogStepType == DialogStepType.ReplyText;
     }
 
@@ -37,6 +44,6 @@ namespace MyCompany.TestArticy
     {
         Default = 0,
         ReplyText = 1,
-        AdditionalTemplate = 2,
+        AdditionalEmotion = 2,
     }
 }
