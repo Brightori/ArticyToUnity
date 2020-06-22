@@ -6,6 +6,7 @@ namespace MyCompany.TestArticy
     [Serializable]
     public class ArticyConversation
     {
+        public long ConversationId;
         public List<ArticyEntity> DialogEntities = new List<ArticyEntity>(32);
         public List<ArticyDialogStep> Dialogs = new List<ArticyDialogStep>(32);
     }
@@ -49,7 +50,8 @@ namespace MyCompany.TestArticy
         public int Orientation;
 
         public ArticyEmotion Emotion = new ArticyEmotion();
-        
+        public ArticyAnimation ArticyAnimation = new ArticyAnimation();
+
         public DialogStepType DialogStepType;
         public List<ArticyDialogStep> NextSteps = new List<ArticyDialogStep>(4);
 

@@ -27,7 +27,7 @@ namespace MyCompany.TestArticy
         private int mExportedObjectCount;
         private int mExportedAssetCount;
         private string mResourcesPath;
-        private Parser parser = new Parser();
+        private Parser parser;
 
         private readonly ApiSession mSession;
         private DirectoryInfo mClassDir;
@@ -49,7 +49,7 @@ namespace MyCompany.TestArticy
 
                 mExportedObjectCount = 0;
                 mExportedAssetCount = 0;
-                parser = new Parser();
+                parser = new Parser(mSession);
 
                 var aTopics = new List<string>
                 {
@@ -60,6 +60,7 @@ namespace MyCompany.TestArticy
                 };
 
                 var flow = mSession.RunQuery("SELECT * FROM Flow WHERE ObjectType=Dialogue");
+                var feature = mSession.GetFeaturePropertyNames("AnimationController3d");
 
                 foreach (var r in flow.Rows)
                 {
