@@ -1,12 +1,14 @@
 ﻿using Articy.Api;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MyCompany.TestArticy
 {
     public class Parser
     {
         private List<ArticyConversation> conversations = new List<ArticyConversation>(64);
+        private List<ArticyEntity> entities = new List<ArticyEntity>(64);
         private ApiSession apiSession;
 
         public ArticyConversation[] Conversations => conversations.ToArray();
@@ -84,6 +86,20 @@ namespace MyCompany.TestArticy
             }
 
             return string.Empty;
+        }
+
+        internal void FillEmotionsInConversations()
+        {
+            foreach (var c in conversations)
+            {
+                foreach (var d in c.Dialogs)
+                {
+                    if (c.DialogsEmotions.Contains(d.Emotion))
+                        continue;
+
+                    c.DialogsEmotions.Add(d.Emotion);
+                }
+            }
         }
 
         private void ProccessDialogueFragment(ObjectProxy objectProxy, ArticyConversation conversation)
@@ -179,7 +195,33 @@ namespace MyCompany.TestArticy
 
         internal void ProcessEntities(ObjectProxy r)
         {
-            throw new NotImplementedException();
+            var entity = new ArticyEntity();
+            entity.Id = (long)r.Id;
+            entity.DisplayId = r.GetDisplayName();
+
+            //собираем все эмоции которые лежат в общей папке с главной ентити
+            var emotions = apiSession.RunQuery($"SELECT * FROM Entities WHERE IsDescendantOf({r.GetParent().Id}) AND TemplateName == 'EmotionCharacters' ");
+    
+            foreach (var e in emotions.Rows)
+            {
+                var emotion = new ArticyEmotion();
+
+                emotion.EmotionName = (e[ObjectPropertyNames.PreviewImageAsset] as ObjectProxy).GetDisplayName();
+                emotion.EmotionId = (long)(e[ObjectPropertyNames.PreviewImageAsset] as ObjectProxy).Id;
+                emotion.EmotionFileName = (string)(e[ObjectPropertyNames.PreviewImageAsset] as ObjectProxy)[ObjectPropertyNames.Filename];
+                emotion.ParentEntityId = entity.Id;
+                emotion.ParentEntityDisplayId = entity.DisplayId;
+                entity.Emotions.Add(emotion);
+            }
+
+            var emotionsInDialogues = conversations.SelectMany(x => x.Dialogs).Select(z => z.Emotion);
+            var neededEmotions = emotionsInDialogues.Where(x => entity.Emotions.Any(z => z.EmotionId == x.EmotionId));
+            foreach (var ne in neededEmotions)
+            {
+                ne.ParentEntityId = entity.Id;
+                ne.ParentEntityDisplayId = entity.DisplayId;
+            }
+            entities.Add(entity);
         }
     }
 }

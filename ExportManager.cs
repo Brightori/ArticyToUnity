@@ -6,6 +6,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Media;
 using System.Linq;
+using Newtonsoft.Json;
 
 namespace MyCompany.TestArticy
 {
@@ -63,7 +64,7 @@ namespace MyCompany.TestArticy
                 };
 
                 var flow = mSession.RunQuery("SELECT * FROM Flow WHERE ObjectType=Dialogue");
-                //var mainCharacters = mSession.RunQuery("SELECT * FROM Entities WHERE TemplateName= 'MainCharacters'");
+                var mainCharacters = mSession.RunQuery("SELECT * FROM Entities WHERE TemplateName= 'MainCharacters'");
 
                 //var data = string.Join(",", mainCharacters.Rows.Select(x => x.Id));
                 //mSession.RunQuery($"SELECT * FROM Entities WHERE IsDescendantOf({0}) AND TemplateName == 'EmotionCharacters' ");
@@ -71,8 +72,12 @@ namespace MyCompany.TestArticy
                 foreach (var r in flow.Rows)
                     parser.ProcessDialogues(r);
                 
-                //foreach (var r in mainCharacters.Rows)
-                //    parser.ProcessEntities(r);
+                foreach (var r in mainCharacters.Rows)
+                    parser.ProcessEntities(r);
+
+                parser.FillEmotionsInConversations();
+
+                var currentDirectory = Environment.CurrentDirectory;
 
                 // check output dir
                 //DirectoryInfo outDir = new DirectoryInfo(aOutputPath);

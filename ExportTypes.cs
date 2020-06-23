@@ -3,11 +3,21 @@ using System.Collections.Generic;
 
 namespace MyCompany.TestArticy
 {
+    public class ArticyConversationsData
+    {
+        public ArticyConversation[] Conversations;
+
+        public ArticyConversationsData(ArticyConversation[] conversations)
+        {
+            Conversations = conversations;
+        }
+    }
+
     [Serializable]
     public class ArticyConversation
     {
         public long ConversationId;
-        public List<ArticyEntity> DialogEntities = new List<ArticyEntity>(32);
+        public List<ArticyEmotion> DialogsEmotions = new List<ArticyEmotion>(32);
         public List<ArticyDialogStep> Dialogs = new List<ArticyDialogStep>(32);
     }
 
@@ -15,16 +25,28 @@ namespace MyCompany.TestArticy
     public class ArticyEntity
     {
         public long Id;
+        public string DisplayId;
         public List<ArticyEmotion> Emotions = new List<ArticyEmotion>(8);
     }
 
     [Serializable]
     public class ArticyEmotion
     {
-        public string ParentEntity;
+        public long ParentEntityId;
+        public string ParentEntityDisplayId;
         public long EmotionId;
         public string EmotionName;
         public string EmotionFileName;
+
+        public override bool Equals(object obj)
+        {
+            if (obj is ArticyEmotion emotion)
+            {
+                return emotion.EmotionId == EmotionId;
+            }
+
+            return false;
+        }
     }
 
     [Serializable]
