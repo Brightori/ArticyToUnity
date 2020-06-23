@@ -1,0 +1,9 @@
+D:\Develop\ExportToUnity\bin\Release\PluginManifest.xml
+D:\Develop\ExportToUnity\bin\Release\Resources\Icon.png
+D:\Develop\ExportToUnity\bin\Release\PluginTexts.tpk
+D:\Develop\ExportToUnity\bin\Release\MyCompany.TestArticy.dll
+D:\Develop\ExportToUnity\bin\Release\MyCompany.TestArticy.pdb
+D:\Develop\ExportToUnity\obj\Release\TestArticy.csprojAssemblyReference.cache
+D:\Develop\ExportToUnity\obj\Release\TestArticy.csproj.CoreCompileInputs.cache
+D:\Develop\ExportToUnity\obj\Release\MyCompany.TestArticy.dll
+D:\Develop\ExportToUnity\obj\Release\MyCompany.TestArticy.pdb

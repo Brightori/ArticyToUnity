@@ -11,12 +11,14 @@ namespace MyCompany.TestArticy
         public List<ArticyDialogStep> Dialogs = new List<ArticyDialogStep>(32);
     }
 
+    [Serializable]
     public class ArticyEntity
     {
-        public string Id;
+        public long Id;
         public List<ArticyEmotion> Emotions = new List<ArticyEmotion>(8);
     }
 
+    [Serializable]
     public class ArticyEmotion
     {
         public string ParentEntity;
@@ -25,6 +27,7 @@ namespace MyCompany.TestArticy
         public string EmotionFileName;
     }
 
+    [Serializable]
     public class ArticyAnimation
     {
         public string UsedAnimation = string.Empty;
@@ -53,7 +56,7 @@ namespace MyCompany.TestArticy
         public ArticyAnimation ArticyAnimation = new ArticyAnimation();
 
         public DialogStepType DialogStepType;
-        public List<ArticyDialogStep> NextSteps = new List<ArticyDialogStep>(4);
+        public List<long> NextStepsIds = new List<long>(4);
 
         public bool IsActive => DialogStepType == DialogStepType.ReplyText;
     }
@@ -64,5 +67,13 @@ namespace MyCompany.TestArticy
         ReplyText = 1,
         AdditionalEmotion = 2,
         BubbleText = 3,
+    }
+
+    public class ValuesHelper
+    {
+        public const string Parent = "Parent";
+        public const string Target = "Target";
+        public const string PreviewImageAsset = "PreviewImageAsset";
+        public const string Speaker = "Speaker";
     }
 }

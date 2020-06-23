@@ -1,4 +1,5 @@
 ﻿using Articy.Api;
+using System;
 using System.Collections.Generic;
 
 namespace MyCompany.TestArticy
@@ -7,6 +8,8 @@ namespace MyCompany.TestArticy
     {
         private List<ArticyConversation> conversations = new List<ArticyConversation>(64);
         private ApiSession apiSession;
+
+        public ArticyConversation[] Conversations => conversations.ToArray();
 
         public Parser(ApiSession apiSession)
         {
@@ -41,6 +44,30 @@ namespace MyCompany.TestArticy
 
         private void ProccessConnection(ObjectProxy connection, ArticyConversation conversation)
         {
+            if (connection.HasProperty(ValuesHelper.Parent))
+            {
+                if (!connection.HasProperty(ObjectPropertyNames.SourcePin))
+                    return;
+
+                var parent = (connection[ObjectPropertyNames.SourcePin] as ObjectProxy).GetParent().Id;
+
+                if (connection.HasProperty(ValuesHelper.Target))
+                {
+                    var target = (connection[ValuesHelper.Target] as ObjectProxy).Id;
+
+                    if (conversation.Dialogs == null || conversation.Dialogs.Count == 0)
+                        return;
+
+                    foreach (var d in conversation.Dialogs)
+                    {
+                        if (d.Id == (long)parent)
+                        {
+                            d.NextStepsIds.Add((long)target);
+                        }
+                    }
+                }
+            }
+
             var name = connection.GetDisplayName();
         }
 
@@ -70,12 +97,12 @@ namespace MyCompany.TestArticy
             var objectId = objectProxy.Id;
 
             //здесь получаем данные касательно персонажа который говорит
-            if (objectProxy.HasProperty("Speaker"))
+            if (objectProxy.HasProperty(ValuesHelper.Speaker))
             {
-                var sp1 = objectProxy["Speaker"];
-                dialogue.Emotion.EmotionName = ((sp1 as ObjectProxy)["PreviewImageAsset"] as ObjectProxy).GetDisplayName();
-                dialogue.Emotion.EmotionId = (long)((sp1 as ObjectProxy)["PreviewImageAsset"] as ObjectProxy).Id;
-                dialogue.Emotion.EmotionFileName = (string)((sp1 as ObjectProxy)["PreviewImageAsset"] as ObjectProxy)["Filename"];
+                var sp1 = objectProxy[ValuesHelper.Speaker];
+                dialogue.Emotion.EmotionName = ((sp1 as ObjectProxy)[ValuesHelper.PreviewImageAsset] as ObjectProxy).GetDisplayName();
+                dialogue.Emotion.EmotionId = (long)((sp1 as ObjectProxy)[ValuesHelper.PreviewImageAsset] as ObjectProxy).Id;
+                dialogue.Emotion.EmotionFileName = (string)((sp1 as ObjectProxy)[ValuesHelper.PreviewImageAsset] as ObjectProxy)["Filename"];
             }
 
             //настройка анимации
@@ -148,6 +175,11 @@ namespace MyCompany.TestArticy
                     dialogue.DialogStepType = DialogStepType.AdditionalEmotion;
                     break;
             }
+        }
+
+        internal void ProcessEntities(ObjectProxy r)
+        {
+            throw new NotImplementedException();
         }
     }
 }

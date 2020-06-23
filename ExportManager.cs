@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows.Media;
+using System.Linq;
 
 namespace MyCompany.TestArticy
 {
@@ -16,7 +17,7 @@ namespace MyCompany.TestArticy
 
     public class ExportManager
     {
-        private const string SCRIPTABLE_OBJECT = "SriptableObject";
+        private const string SCRIPTABLE_OBJECT = "ScriptableObject";
         private const string MONO_BEHAVIOUR = "";
         private const string PATH = "D:/Develop/ExportToUnity/ExportTest/";
 
@@ -31,6 +32,8 @@ namespace MyCompany.TestArticy
 
         private readonly ApiSession mSession;
         private DirectoryInfo mClassDir;
+        
+        public ArticyConversation[] ArticyConversations => parser.Conversations;
 
         public ExportManager(ApiSession mSession)
         {
@@ -60,12 +63,16 @@ namespace MyCompany.TestArticy
                 };
 
                 var flow = mSession.RunQuery("SELECT * FROM Flow WHERE ObjectType=Dialogue");
-                var feature = mSession.GetFeaturePropertyNames("AnimationController3d");
+                //var mainCharacters = mSession.RunQuery("SELECT * FROM Entities WHERE TemplateName= 'MainCharacters'");
+
+                //var data = string.Join(",", mainCharacters.Rows.Select(x => x.Id));
+                //mSession.RunQuery($"SELECT * FROM Entities WHERE IsDescendantOf({0}) AND TemplateName == 'EmotionCharacters' ");
 
                 foreach (var r in flow.Rows)
-                {
                     parser.ProcessDialogues(r);
-                }
+                
+                //foreach (var r in mainCharacters.Rows)
+                //    parser.ProcessEntities(r);
 
                 // check output dir
                 //DirectoryInfo outDir = new DirectoryInfo(aOutputPath);
@@ -130,7 +137,7 @@ namespace MyCompany.TestArticy
                 //}
 
 
-                mSession.ShowMessageBox("Complete");
+                mSession.ShowMessageBox("Complete",null, System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
