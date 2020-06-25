@@ -30,7 +30,7 @@ namespace MyCompany.TestArticy
         private void ConfigureTemplate(MacroCommandDescriptor aDescriptor, List<ObjectProxy> aSelectedobjects)
         {
 			ExportManager = ExportManager ?? new ExportManager(Session);
-			ExportManager.Export(ClassNameSource.TechnicalName);
+			ExportManager.Export();
 		}
 
 		public override List<MacroCommandDescriptor> GetMenuEntries(List<ObjectProxy> aSelectedObjects, ContextMenuContext aContext )
@@ -46,8 +46,8 @@ namespace MyCompany.TestArticy
 			
 			result.Add(new MacroCommandDescriptor()
             {
-				CaptionLid = "Open Unity Folder",
-				Execute = OpenFolder
+				CaptionLid = "Set Unity Project Folder",
+				Execute = ExportManager.SetUnityFolderFolder
 			});
 
 			var flow = Session.RunQuery("SELECT * FROM Flow WHERE ObjectType=FlowFragment");
@@ -60,44 +60,10 @@ namespace MyCompany.TestArticy
 				var list = obj.GetChildren();
 			}
 
-			switch ( aContext )
-			{
-				case ContextMenuContext.Global:
-					// entries for the "global" commands of the ribbon menu are requested
-					return result;
-					
-				default:
-					// normal context menu when working in the content area, navigator, search
-					return result;
-			}
+			return result;
 		}
 
-        private void OpenFolder(MacroCommandDescriptor aDescriptor, List<ObjectProxy> aSelectedObjects)
-        {
-			var folderBrowserDialog1 = new FolderBrowserDialog();
-			DialogResult result = folderBrowserDialog1.ShowDialog();
-			
-			//if (result == DialogResult.OK)
-			//{
-			//	var folderName = folderBrowserDialog1.SelectedPath;
-
-			//	//RegistryKey key = Registry.LocalMachine.OpenSubKey("Software", true);
-
-			//	//if (key.GetValue("7-Zip") != null)
-   // //            {
-			//	//	//MessageBox.Show("Hello, world!");
-			//	//}
-
-			//	//key.CreateSubKey("AppName");
-			//	//key = key.OpenSubKey("AppName", true);
-
-
-			//	//key.CreateSubKey("AppVersion");
-			//	//key = key.OpenSubKey("AppVersion", true);
-
-			//	//key.SetValue("yourkey", "yourvalue");
-			//}
-		}
+       
 
         public override Brush GetIcon(string aIconName)
 		{

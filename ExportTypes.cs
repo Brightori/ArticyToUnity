@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace MyCompany.TestArticy
 {
+    [Serializable]
     public class ArticyConversationsData
     {
         public ArticyConversation[] Conversations;
@@ -10,6 +11,17 @@ namespace MyCompany.TestArticy
         public ArticyConversationsData(ArticyConversation[] conversations)
         {
             Conversations = conversations;
+        }
+    }    
+    
+    [Serializable]
+    public class ArticyEntitiesData
+    {
+        public ArticyEntity[] Entities;
+
+        public ArticyEntitiesData(ArticyEntity[] entities)
+        {
+            Entities = entities;
         }
     }
 

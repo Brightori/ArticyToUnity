@@ -12,6 +12,7 @@ namespace MyCompany.TestArticy
         private ApiSession apiSession;
 
         public ArticyConversation[] Conversations => conversations.ToArray();
+        public ArticyEntity[] Entities => entities.ToArray();
 
         public Parser(ApiSession apiSession)
         {
