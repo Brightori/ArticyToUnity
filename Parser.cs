@@ -197,7 +197,7 @@ namespace MyCompany.TestArticy
         internal void ProcessEntities(ObjectProxy r)
         {
             var entity = new ArticyEntity();
-            entity.Id = (long)r.Id;
+            entity.EntityId = (long)r.Id;
             entity.DisplayId = r.GetDisplayName();
 
             //собираем все эмоции которые лежат в общей папке с главной ентити
@@ -210,7 +210,7 @@ namespace MyCompany.TestArticy
                 emotion.EmotionName = (e[ObjectPropertyNames.PreviewImageAsset] as ObjectProxy).GetDisplayName();
                 emotion.EmotionId = (long)(e[ObjectPropertyNames.PreviewImageAsset] as ObjectProxy).Id;
                 emotion.EmotionFileName = (string)(e[ObjectPropertyNames.PreviewImageAsset] as ObjectProxy)[ObjectPropertyNames.Filename];
-                emotion.ParentEntityId = entity.Id;
+                emotion.ParentEntityId = entity.EntityId;
                 emotion.ParentEntityDisplayId = entity.DisplayId;
                 entity.Emotions.Add(emotion);
             }
@@ -219,7 +219,7 @@ namespace MyCompany.TestArticy
             var neededEmotions = emotionsInDialogues.Where(x => entity.Emotions.Any(z => z.EmotionId == x.EmotionId));
             foreach (var ne in neededEmotions)
             {
-                ne.ParentEntityId = entity.Id;
+                ne.ParentEntityId = entity.EntityId;
                 ne.ParentEntityDisplayId = entity.DisplayId;
             }
             entities.Add(entity);

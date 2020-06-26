@@ -16,7 +16,7 @@ namespace MyCompany.TestArticy
         public const string ConversationsJsonName = "\\conversations.json";
         public const string CharactersJsonName = "\\characters.json";
 
-        public const string AssetsPathForEmotions = "\\Assets\\ResourcesRaw\\Characters\\Emotions\\";
+        public const string AssetsPathForEmotions = "Assets\\ResourcesRaw\\Characters\\Emotions\\";
         private Parser parser;
         private readonly ApiSession mSession;
 
@@ -76,8 +76,8 @@ namespace MyCompany.TestArticy
 
                 //сериализуем и закидываем в юнити
                 {
-                    string conversations = JsonConvert.SerializeObject(new ArticyConversationsData(parser.Conversations));
-                    string characters = JsonConvert.SerializeObject(new ArticyEntitiesData(parser.Entities));
+                    string conversations = JsonConvert.SerializeObject(ConversationAdapter());
+                    string characters = JsonConvert.SerializeObject(CharactersAdapter());
 
                     File.WriteAllText(dataDir.FullName + ConversationsJsonName, conversations);
                     File.WriteAllText(dataDir.FullName + CharactersJsonName, characters);
@@ -92,6 +92,24 @@ namespace MyCompany.TestArticy
             {
                 mSession.ShowMessageBox("Error");
             }
+        }
+
+        private Dictionary<long, ArticyConversation> ConversationAdapter()
+        {
+            Dictionary<long, ArticyConversation> conversationFacade = new Dictionary<long, ArticyConversation>(100);
+            foreach (var c in parser.Conversations)
+                conversationFacade.Add(c.ConversationId, c);
+
+            return conversationFacade;
+        } 
+        
+        private Dictionary<long, ArticyEntity> CharactersAdapter()
+        {
+            Dictionary<long, ArticyEntity> conversationFacade = new Dictionary<long, ArticyEntity>(100);
+            foreach (var e in parser.Entities)
+                conversationFacade.Add(e.EntityId, e);
+
+            return conversationFacade;
         }
 
         private void CopyAssetsToUnity()
@@ -110,21 +128,35 @@ namespace MyCompany.TestArticy
                 if (!charDir.Exists) charDir.Create();
 
                 var images = mSession.RunQuery($"SELECT * FROM Assets WHERE IsDescendantOf({c.Id}) AND TemplateName == 'EmotionTextures'");
+                var emotions = parser.Entities.SelectMany(x => x.Emotions).ToList();
 
                 foreach (var img in images.Rows)
                 {
                     var assetFullFilename = (string)img[ObjectPropertyNames.AbsoluteFilePath];
+                    var assetFilename = (string)img[ObjectPropertyNames.Filename];
                     var assetFile = new FileInfo(assetFullFilename);
+
+                    var neededEmotion = emotions.FirstOrDefault(x => x.EmotionFileName == assetFilename);
+
+                    if (neededEmotion == null)
+                        continue;
+
+                    var unityFileName = Path.Combine(savePath, AssetsPathForEmotions, c.GetDisplayName(), neededEmotion.EmotionName + neededEmotion.EmotionId + assetFile.Extension);
 
                     if (assetFile.Exists)
                     {
-                        var unityFileName = charDir.FullName + "\\" + img[ObjectPropertyNames.Filename];
                         FileInfo unityFile = new FileInfo(unityFileName);
 
                         if (unityFile.Exists)
-                            continue;
+                        {
+                            if (unityFile.Length == assetFile.Length)
+                                continue;
+                        }
+
+                        ///using (FileStream outfile = new FileStream())
 
                         assetFile.CopyTo(unityFileName, true);
+                        assetFile.IsReadOnly = false;
                     }
                 }
             }

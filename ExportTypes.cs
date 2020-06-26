@@ -36,7 +36,7 @@ namespace MyCompany.TestArticy
     [Serializable]
     public class ArticyEntity
     {
-        public long Id;
+        public long EntityId;
         public string DisplayId;
         public List<ArticyEmotion> Emotions = new List<ArticyEmotion>(8);
     }
