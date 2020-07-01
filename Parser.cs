@@ -1,5 +1,4 @@
 ﻿using Articy.Api;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -29,6 +28,16 @@ namespace MyCompany.TestArticy
 
             foreach (var c in childs)
                 GetDataForConversation(c, conversation);
+
+            var firstConnections = childs.Where(x => x.ObjectType == ObjectType.Connection).Where(z => (z[ObjectPropertyNames.Source] as ObjectProxy).Id == child.Id);
+            foreach (var f in firstConnections)
+            {
+              if (f.HasProperty(ObjectPropertyNames.Target))
+                {
+                    if ((f[ObjectPropertyNames.Target] as ObjectProxy).ObjectType == ObjectType.DialogueFragment)
+                        conversation.StartDialogs.Add((long)(f[ObjectPropertyNames.Target] as ObjectProxy).Id);
+                }
+            }
         }
 
         private void GetDataForConversation(ObjectProxy objectProxy, ArticyConversation conversation)
@@ -56,7 +65,11 @@ namespace MyCompany.TestArticy
 
                 if (connection.HasProperty(ValuesHelper.Target))
                 {
-                    var target = (connection[ValuesHelper.Target] as ObjectProxy).Id;
+                    var convertToProxy = connection[ValuesHelper.Target] as ObjectProxy;
+                    if (convertToProxy.ObjectType != ObjectType.DialogueFragment)
+                        return;
+
+                    var target = convertToProxy.Id;
 
                     if (conversation.Dialogs == null || conversation.Dialogs.Count == 0)
                         return;
@@ -70,8 +83,6 @@ namespace MyCompany.TestArticy
                     }
                 }
             }
-
-            var name = connection.GetDisplayName();
         }
 
         private string GetEnumNameFromProperty(string propertyName, ObjectProxy objectProxy)

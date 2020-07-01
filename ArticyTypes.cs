@@ -29,6 +29,7 @@ namespace MyCompany.TestArticy
     public class ArticyConversation
     {
         public long ConversationId;
+        public List<long> StartDialogs = new List<long>();
         public List<ArticyEmotion> DialogsEmotions = new List<ArticyEmotion>(32);
         public List<ArticyDialogStep> Dialogs = new List<ArticyDialogStep>(32);
     }
@@ -67,14 +68,14 @@ namespace MyCompany.TestArticy
         public string UsedAnimation = string.Empty;
         public List<string> SettedBools = new List<string>(4);
 
-        public float WaitForStart = 0;
-        public float BoolTimeOut = 5;
+        public float WaitForStart = 0.0f;
+        public float BoolTimeOut = 5.0f;
 
         public string IntParamName = string.Empty;
         public int IntParamValue = 0;
 
         public string FloatParamName = string.Empty;
-        public float FloatParamValue = 0;
+        public float FloatParamValue = 0.0f;
     }
 
     [Serializable]

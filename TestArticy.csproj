@@ -77,7 +77,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExportManager.cs" />
-    <Compile Include="ExportTypes.cs" />
+    <Compile Include="ArticyTypes.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
