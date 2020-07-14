@@ -63,7 +63,7 @@ namespace MyCompany.TestArticy
     }
 
     [Serializable]
-    public class ArticyAnimation
+    public class ArticyAnimation3dControl
     {
         public string UsedAnimation = string.Empty;
         public List<string> SettedBools = new List<string>(4);
@@ -87,13 +87,37 @@ namespace MyCompany.TestArticy
         public string Text;
         public int Orientation;
 
+        // эмоции это всё что связано с отображением UI 2д персонажа в текущий диалоговый шаг, тобишь просто картинка текущего персонажа
+        // они из артиси переносятся в юнити c именем файла состоящим из имени главперсонажа + уникальный айди эмоции. 
+        //там есть доп. данные чтобы потом можно было быстро отдебажить (по отображаемому имени в артиси + оригинальному названию граф файла)
         public ArticyEmotion Emotion = new ArticyEmotion();
-        public ArticyAnimation ArticyAnimation = new ArticyAnimation();
+        public ArticyAnimation3dControl ArticyAnimation = new ArticyAnimation3dControl();
+
+        public ArticyComicsEffect ArticyComicsEffect;
 
         public DialogStepType DialogStepType;
+        public List<ArticyAnswer> Answers = new List<ArticyAnswer>(3);
         public List<long> NextStepsIds = new List<long>(4);
 
         public bool IsActive => DialogStepType == DialogStepType.ReplyText;
+    }
+
+    [Serializable]
+    public class ArticyComicsEffect
+    {
+        public long Id;
+        public string DisplayId;
+        public string FileName;
+    }
+
+    [Serializable]
+    public class ArticyAnswer
+    {
+        public string DisplayId;
+        public long Id;
+
+        public string Text;
+        public long NextDialogueStepId;
     }
 
     public enum DialogStepType
@@ -110,5 +134,6 @@ namespace MyCompany.TestArticy
         public const string Target = "Target";
         public const string PreviewImageAsset = "PreviewImageAsset";
         public const string Speaker = "Speaker";
+        public const string ComicsEffect = "ReplySettings.ComicsEffect";
     }
 }

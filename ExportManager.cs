@@ -1,5 +1,6 @@
 ﻿using Articy.Api;
 using Articy.Api.Plugins;
+using DocumentFormat.OpenXml.CustomProperties;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -15,8 +16,10 @@ namespace MyCompany.TestArticy
         public const string SettingsJsonName = "\\settings.json";
         public const string ConversationsJsonName = "\\conversations.json";
         public const string CharactersJsonName = "\\characters.json";
+        public const string AnswersJsonName = "\\answers.json";
+        public const string AssetsPathForEmotions = "\\Assets\\ResourcesRaw\\Characters\\Emotions\\";
+        public const string AssetsPathForEmoji = "\\Assets\\ResourcesRaw\\Characters\\Emoji\\";
 
-        public const string AssetsPathForEmotions = "Assets\\ResourcesRaw\\Characters\\Emotions\\";
         private Parser parser;
         private readonly ApiSession mSession;
 
@@ -57,19 +60,25 @@ namespace MyCompany.TestArticy
                 // prepare export run
                 parser = new Parser(mSession);
 
-                //собираем всех персонажей 
+                //собираем все диалоги 
                 var flow = mSession.RunQuery("SELECT * FROM Flow WHERE ObjectType=Dialogue");
 
                 //собираем всех персонажей
                 var mainCharacters = mSession.RunQuery("SELECT * FROM Entities WHERE TemplateName= 'MainCharacters'");
 
+                //собираем варианты ответов в диалогах
+                var playerChoises = mSession.RunQuery("SELECT * FROM Flow WHERE TemplateName= 'playerChoise'");
+
                 //обработка диалогов
                 foreach (var r in flow.Rows)
                     parser.ProcessDialogues(r);
 
-                //обработка персонадей
+                //обработка персонажей
                 foreach (var r in mainCharacters.Rows)
                     parser.ProcessEntities(r);
+
+                foreach (var pc in playerChoises.Rows)
+                    parser.ProcessPlayerChoices(pc);
 
                 //пробегаемся по диалогам и прокидываем в эмоции диалогов айди их персонажей
                 parser.FillEmotionsInConversations();
@@ -78,9 +87,11 @@ namespace MyCompany.TestArticy
                 {
                     string conversations = JsonConvert.SerializeObject(ConversationAdapter());
                     string characters = JsonConvert.SerializeObject(CharactersAdapter());
+                    string answers = JsonConvert.SerializeObject(AnswersAdapter());
 
                     File.WriteAllText(dataDir.FullName + ConversationsJsonName, conversations);
                     File.WriteAllText(dataDir.FullName + CharactersJsonName, characters);
+                    File.WriteAllText(dataDir.FullName + AnswersJsonName, answers);
 
                     //копируем ассеты эмоций
                     CopyAssetsToUnity();
@@ -101,8 +112,8 @@ namespace MyCompany.TestArticy
                 conversationFacade.Add(c.ConversationId, c);
 
             return conversationFacade;
-        } 
-        
+        }
+
         private Dictionary<long, ArticyEntity> CharactersAdapter()
         {
             Dictionary<long, ArticyEntity> conversationFacade = new Dictionary<long, ArticyEntity>(100);
@@ -112,9 +123,20 @@ namespace MyCompany.TestArticy
             return conversationFacade;
         }
 
+        private Dictionary<long, ArticyAnswer> AnswersAdapter()
+        {
+            Dictionary<long, ArticyAnswer> conversationFacade = new Dictionary<long, ArticyAnswer>(64);
+            foreach (var e in parser.ArticyAnswers)
+                conversationFacade.Add(e.Id, e);
+
+            return conversationFacade;
+        }
+
         private void CopyAssetsToUnity()
         {
             var emotionsFolder = mSession.RunQuery($"SELECT * FROM Assets WHERE DisplayName == '2dEmotion'").Rows.FirstOrDefault();
+            var emoji = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'Emoji2dUnique'");
+            var emojiStandart = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'Emoji2d'");
 
             if (emotionsFolder == null)
             {
@@ -124,7 +146,7 @@ namespace MyCompany.TestArticy
 
             foreach (var c in emotionsFolder.GetChildren())
             {
-                DirectoryInfo charDir = new DirectoryInfo(savePath + AssetsPathForEmotions + $@"\{c.GetDisplayName()}");
+                DirectoryInfo charDir = new DirectoryInfo(savePath + AssetsPathForEmotions + $@"\{c.GetDisplayName()}\");
                 if (!charDir.Exists) charDir.Create();
 
                 var images = mSession.RunQuery($"SELECT * FROM Assets WHERE IsDescendantOf({c.Id}) AND TemplateName == 'EmotionTextures'");
@@ -141,25 +163,60 @@ namespace MyCompany.TestArticy
                     if (neededEmotion == null)
                         continue;
 
-                    var unityFileName = Path.Combine(savePath, AssetsPathForEmotions, c.GetDisplayName(), neededEmotion.EmotionName + neededEmotion.EmotionId + assetFile.Extension);
+                    var unityFileName = charDir.FullName + neededEmotion.EmotionName + neededEmotion.EmotionId + assetFile.Extension;
+                    FileInfo unityFile = new FileInfo(unityFileName);
 
                     if (assetFile.Exists)
                     {
-                        FileInfo unityFile = new FileInfo(unityFileName);
-
                         if (unityFile.Exists)
                         {
                             if (unityFile.Length == assetFile.Length)
                                 continue;
                         }
 
-                        ///using (FileStream outfile = new FileStream())
-
-                        assetFile.CopyTo(unityFileName, true);
-                        assetFile.IsReadOnly = false;
+                        File.Copy(assetFile.FullName, unityFile.FullName, true);
                     }
                 }
+
+                SaveEmoji(emoji.Rows);
+                SaveEmoji(emojiStandart.Rows);
             }
+        }
+
+        private void SaveEmoji(List<ObjectProxy> emojies)
+        {
+            foreach (var e in emojies)
+            {
+                var assetFullFilename = (string)e[ObjectPropertyNames.AbsoluteFilePath];
+                var assetFilename = (string)e[ObjectPropertyNames.Filename];
+                var assetFile = new FileInfo(assetFullFilename);
+
+                if (!parser.Conversations.Any(x => x.Dialogs.Any(z => z.ArticyComicsEffect != null && z.ArticyComicsEffect.FileName == assetFilename)))
+                    continue;
+
+                SaveToPath(assetFile, AssetsPathForEmoji, ((long)e.Id).ToString());
+            }
+        }
+
+        private void SaveToPath(FileInfo copyFromFile, string subFolderUnityPath, string filename)
+        {
+            if (!copyFromFile.Exists)
+                return;
+
+            var needDir = new DirectoryInfo(savePath + subFolderUnityPath);
+            if (!needDir.Exists) Directory.CreateDirectory(needDir.FullName);
+
+            var unityFileName = needDir.FullName + filename + copyFromFile.Extension;
+
+            FileInfo unityFile = new FileInfo(unityFileName);
+
+            if (unityFile.Exists)
+            {
+                if (unityFile.Length == copyFromFile.Length)
+                    return;
+            }
+
+            File.Copy(copyFromFile.FullName, unityFile.FullName, true);
         }
 
         private bool IsHaveSavePath()
@@ -180,6 +237,11 @@ namespace MyCompany.TestArticy
         {
             var folderBrowserDialog = new FolderBrowserDialog();
             DialogResult result = folderBrowserDialog.ShowDialog();
+
+            if (result != DialogResult.OK)
+                return;
+
+            
             savePath = folderBrowserDialog.SelectedPath;
             File.WriteAllText(Environment.CurrentDirectory + SettingsJsonName, JsonConvert.SerializeObject(savePath));
         }

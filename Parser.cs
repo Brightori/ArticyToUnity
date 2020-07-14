@@ -1,4 +1,5 @@
 ﻿using Articy.Api;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,10 +9,12 @@ namespace MyCompany.TestArticy
     {
         private List<ArticyConversation> conversations = new List<ArticyConversation>(64);
         private List<ArticyEntity> entities = new List<ArticyEntity>(64);
+        private List<ArticyAnswer> articyAnswers = new List<ArticyAnswer>(64);
         private ApiSession apiSession;
 
         public ArticyConversation[] Conversations => conversations.ToArray();
         public ArticyEntity[] Entities => entities.ToArray();
+        public ArticyAnswer[] ArticyAnswers => articyAnswers.ToArray();
 
         public Parser(ApiSession apiSession)
         {
@@ -85,6 +88,17 @@ namespace MyCompany.TestArticy
             }
         }
 
+        public void ProcessPlayerChoices(ObjectProxy pc)
+        {
+            var answer = new ArticyAnswer();
+
+            answer.DisplayId = pc.GetDisplayName();
+            answer.Id = (long)pc.Id;
+            answer.Text = (string)pc[ObjectPropertyNames.Text];
+
+            articyAnswers.Add(answer);
+        }
+
         private string GetEnumNameFromProperty(string propertyName, ObjectProxy objectProxy)
         {
             var getFullProperty = apiSession.GetFeaturePropertyInfo(propertyName);
@@ -127,10 +141,27 @@ namespace MyCompany.TestArticy
             //здесь получаем данные касательно персонажа который говорит
             if (objectProxy.HasProperty(ValuesHelper.Speaker))
             {
-                var sp1 = objectProxy[ValuesHelper.Speaker];
-                dialogue.Emotion.EmotionName = ((sp1 as ObjectProxy)[ValuesHelper.PreviewImageAsset] as ObjectProxy).GetDisplayName();
-                dialogue.Emotion.EmotionId = (long)((sp1 as ObjectProxy)[ValuesHelper.PreviewImageAsset] as ObjectProxy).Id;
-                dialogue.Emotion.EmotionFileName = (string)((sp1 as ObjectProxy)[ValuesHelper.PreviewImageAsset] as ObjectProxy)["Filename"];
+                var speaker = objectProxy[ValuesHelper.Speaker];
+
+                if (speaker != null)
+                {
+                    dialogue.Emotion.EmotionName = ((speaker as ObjectProxy)[ValuesHelper.PreviewImageAsset] as ObjectProxy).GetDisplayName();
+                    dialogue.Emotion.EmotionId = (long)((speaker as ObjectProxy)[ValuesHelper.PreviewImageAsset] as ObjectProxy).Id;
+                    dialogue.Emotion.EmotionFileName = (string)((speaker as ObjectProxy)[ValuesHelper.PreviewImageAsset] as ObjectProxy)["Filename"];
+                }
+            }
+
+            if (objectProxy.HasProperty(ValuesHelper.ComicsEffect))
+            {
+                var comicsEffect = objectProxy[ValuesHelper.ComicsEffect];
+
+                if (comicsEffect != null)
+                {
+                    dialogue.ArticyComicsEffect = new ArticyComicsEffect();
+                    dialogue.ArticyComicsEffect.DisplayId = (comicsEffect as ObjectProxy).GetDisplayName();
+                    dialogue.ArticyComicsEffect.Id= (long)(comicsEffect as ObjectProxy).Id;
+                    dialogue.ArticyComicsEffect.FileName = (string)(comicsEffect as ObjectProxy)[ObjectPropertyNames.Filename];
+                }
             }
 
             //настройка анимации
