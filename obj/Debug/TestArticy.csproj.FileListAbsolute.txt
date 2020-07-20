@@ -18,3 +18,7 @@ D:\Develop\ExportToUnity\obj\Debug\TestArticy.csproj.CoreCompileInputs.cache
 D:\Develop\ExportToUnity\obj\Debug\MyCompany.TestArticy.dll
 D:\Develop\ExportToUnity\obj\Debug\MyCompany.TestArticy.pdb
 D:\Develop\ExportToUnity\obj\Debug\TestArticy.csprojAssemblyReference.cache
+C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\MyCompany.TestArticy.dll.config
+C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\App.config
+C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\Properties\Settings.Designer.cs
+C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\Properties\Settings.settings

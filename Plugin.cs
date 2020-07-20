@@ -1,9 +1,6 @@
 ﻿using Articy.Api;
 using Articy.Api.Plugins;
-using Microsoft.Win32;
-using System;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Windows.Media;
 
 //using Texts = LIds.MyCompany.TestArticy;
@@ -62,8 +59,6 @@ namespace MyCompany.TestArticy
 
 			return result;
 		}
-
-       
 
         public override Brush GetIcon(string aIconName)
 		{

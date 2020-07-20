@@ -4,6 +4,7 @@ using DocumentFormat.OpenXml.CustomProperties;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -13,6 +14,7 @@ namespace MyCompany.TestArticy
     public class ExportManager
     {
         private string savePath = string.Empty;
+        private const string SavePathKey = "SavePathKey";
         public const string SettingsJsonName = "\\settings.json";
         public const string ConversationsJsonName = "\\conversations.json";
         public const string CharactersJsonName = "\\characters.json";
@@ -105,9 +107,9 @@ namespace MyCompany.TestArticy
             }
         }
 
-        private Dictionary<long, ArticyConversation> ConversationAdapter()
+        private Dictionary<string, ArticyConversation> ConversationAdapter()
         {
-            Dictionary<long, ArticyConversation> conversationFacade = new Dictionary<long, ArticyConversation>(100);
+            Dictionary<string, ArticyConversation> conversationFacade = new Dictionary<string, ArticyConversation>(100);
             foreach (var c in parser.Conversations)
                 conversationFacade.Add(c.ConversationId, c);
 
@@ -137,6 +139,7 @@ namespace MyCompany.TestArticy
             var emotionsFolder = mSession.RunQuery($"SELECT * FROM Assets WHERE DisplayName == '2dEmotion'").Rows.FirstOrDefault();
             var emoji = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'Emoji2dUnique'");
             var emojiStandart = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'Emoji2d'");
+            var bubblePicture = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'BubblePicture'");
 
             if (emotionsFolder == null)
             {
@@ -180,9 +183,25 @@ namespace MyCompany.TestArticy
 
                 SaveEmoji(emoji.Rows);
                 SaveEmoji(emojiStandart.Rows);
+                SaveBubblePicture(bubblePicture.Rows);
             }
         }
 
+        private void SaveBubblePicture(List<ObjectProxy> emojies)
+        {
+            foreach (var e in emojies)
+            {
+                var assetFullFilename = (string)e[ObjectPropertyNames.AbsoluteFilePath];
+                var assetFilename = (string)e[ObjectPropertyNames.Filename];
+                var assetFile = new FileInfo(assetFullFilename);
+
+                if (!parser.Conversations.Any(x => x.Dialogs.Any(z => z.BubblePicture != null && z.BubblePicture.FileName == assetFilename)))
+                    continue;
+
+                SaveToPath(assetFile, AssetsPathForEmoji, ((long)e.Id).ToString());
+            }
+        } 
+        
         private void SaveEmoji(List<ObjectProxy> emojies)
         {
             foreach (var e in emojies)
@@ -221,29 +240,22 @@ namespace MyCompany.TestArticy
 
         private bool IsHaveSavePath()
         {
-            if (savePath == string.Empty)
-            {
-                if (!File.Exists(Environment.CurrentDirectory + SettingsJsonName))
-                    return false;
-
-                var openSetting = File.ReadAllText(Environment.CurrentDirectory + SettingsJsonName);
-                savePath = (string)JsonConvert.DeserializeObject(openSetting);
-            }
-
-            return true;
+            savePath = Properties.Settings.Default.SavePath;
+            return savePath != string.Empty;
         }
 
         public void SetUnityFolderFolder(MacroCommandDescriptor aDescriptor, List<ObjectProxy> aSelectedObjects)
         {
             var folderBrowserDialog = new FolderBrowserDialog();
+
             DialogResult result = folderBrowserDialog.ShowDialog();
 
             if (result != DialogResult.OK)
                 return;
 
-            
             savePath = folderBrowserDialog.SelectedPath;
-            File.WriteAllText(Environment.CurrentDirectory + SettingsJsonName, JsonConvert.SerializeObject(savePath));
+            Properties.Settings.Default.SavePath = savePath;
+            Properties.Settings.Default.Save();
         }
     }
 }

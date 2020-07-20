@@ -19,12 +19,14 @@ namespace MyCompany.TestArticy
         public Parser(ApiSession apiSession)
         {
             this.apiSession = apiSession;
+
         }
 
         public void ProcessDialogues(ObjectProxy child)
         {
             var conversation = new ArticyConversation();
-            conversation.ConversationId = (long)child.Id;
+
+            conversation.ConversationId = "0x"+((long)child.Id).ToString("X16");
             conversations.Add(conversation);
 
             var childs = child.GetChildren();
@@ -35,7 +37,7 @@ namespace MyCompany.TestArticy
             var firstConnections = childs.Where(x => x.ObjectType == ObjectType.Connection).Where(z => (z[ObjectPropertyNames.Source] as ObjectProxy).Id == child.Id);
             foreach (var f in firstConnections)
             {
-              if (f.HasProperty(ObjectPropertyNames.Target))
+                if (f.HasProperty(ObjectPropertyNames.Target))
                 {
                     if ((f[ObjectPropertyNames.Target] as ObjectProxy).ObjectType == ObjectType.DialogueFragment)
                         conversation.StartDialogs.Add((long)(f[ObjectPropertyNames.Target] as ObjectProxy).Id);
@@ -133,7 +135,7 @@ namespace MyCompany.TestArticy
             var dialogue = new ArticyDialogStep();
             conversation.Dialogs.Add(dialogue);
 
-            var displayName = objectProxy.GetDisplayName();
+            var displayName = StringFixed(objectProxy.GetDisplayName());
             var templateName = objectProxy.GetTemplateTechnicalName();
 
             var objectId = objectProxy.Id;
@@ -157,10 +159,35 @@ namespace MyCompany.TestArticy
 
                 if (comicsEffect != null)
                 {
+                    var objectProxyTemp = (comicsEffect as ObjectProxy);
+
                     dialogue.ArticyComicsEffect = new ArticyComicsEffect();
-                    dialogue.ArticyComicsEffect.DisplayId = (comicsEffect as ObjectProxy).GetDisplayName();
-                    dialogue.ArticyComicsEffect.Id= (long)(comicsEffect as ObjectProxy).Id;
-                    dialogue.ArticyComicsEffect.FileName = (string)(comicsEffect as ObjectProxy)[ObjectPropertyNames.Filename];
+                    dialogue.ArticyComicsEffect.DisplayId = StringFixed(objectProxyTemp.GetDisplayName());
+                    dialogue.ArticyComicsEffect.Id = (long)objectProxyTemp.Id;
+                    dialogue.ArticyComicsEffect.FileName = (string)objectProxyTemp[ObjectPropertyNames.Filename];
+
+                    if ((string)objectProxy[ObjectPropertyNames.TemplateName] == ValuesHelper.BubblePicture2d)
+                    {
+                        dialogue.ArticyComicsEffect.EffectType = ArticyComicsEffectType.DreamBubble;
+                    }   
+                    
+                    if ((string)objectProxy[ObjectPropertyNames.TemplateName] == ValuesHelper.Emotion2D)
+                    {
+                        dialogue.ArticyComicsEffect.EffectType = ArticyComicsEffectType.Emotion2d;
+                    }
+                }
+            }
+
+            if (objectProxy.HasProperty(ValuesHelper.BubblePicture))
+            {
+                var bubblePicture = objectProxy[ValuesHelper.BubblePicture];
+
+                if (bubblePicture != null)
+                {
+                    dialogue.BubblePicture = new ArticyComicsEffect();
+                    dialogue.BubblePicture.DisplayId = StringFixed((bubblePicture as ObjectProxy).GetDisplayName());
+                    dialogue.BubblePicture.Id = (long)(bubblePicture as ObjectProxy).Id;
+                    dialogue.BubblePicture.FileName = (string)(bubblePicture as ObjectProxy)[ObjectPropertyNames.Filename];
                 }
             }
 
@@ -198,13 +225,13 @@ namespace MyCompany.TestArticy
                 if (intParamName != null)
                 {
                     animation.IntParamName = GetEnumNameFromProperty("AnimationController3d.IntParamName", objectProxy);
-                    animation.IntParamValue = (int)intParamValue;
+                    animation.IntParamValue = intParamValue != null ?(int)intParamValue :0;
                 }
 
                 if (floatParamName != null)
                 {
                     animation.FloatParamName = GetEnumNameFromProperty("AnimationController3d.FloatParamName", objectProxy);
-                    animation.FloatParamValue = (float)(double)floatParamValue;
+                    animation.FloatParamValue = floatParamValue != null ? (float)(double)floatParamValue : 0;
                 }
             }
 
@@ -236,6 +263,8 @@ namespace MyCompany.TestArticy
             }
         }
 
+        private string StringFixed(string id) => id.Replace("\"", " ");
+
         internal void ProcessEntities(ObjectProxy r)
         {
             var entity = new ArticyEntity();
@@ -244,7 +273,7 @@ namespace MyCompany.TestArticy
 
             //собираем все эмоции которые лежат в общей папке с главной ентити
             var emotions = apiSession.RunQuery($"SELECT * FROM Entities WHERE IsDescendantOf({r.GetParent().Id}) AND TemplateName == 'EmotionCharacters' ");
-    
+
             foreach (var e in emotions.Rows)
             {
                 var emotion = new ArticyEmotion();
