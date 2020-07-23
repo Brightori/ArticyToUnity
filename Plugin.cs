@@ -62,17 +62,6 @@ namespace MyCompany.TestArticy
 
         public override Brush GetIcon(string aIconName)
 		{
-			switch (aIconName)
-			{
-				// if you have specified the "IconFile" in the PluginManifest.xml you don't need this case
-				// unless you want to have an icon that differs when the plugin is loaded from the non-loaded case
-				// or you want to put all icons within the resources of your plugin assembly
-				/*
-				case "$self":
-					// get the main icon for the plugin
-					return Session.CreateBrushFromFile(Manifest.ManifestPath+"Resources\\Icon.png");
-				*/
-			}
 			return null;
 		}
 	}

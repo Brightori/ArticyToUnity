@@ -1,10 +1,8 @@
 ﻿using Articy.Api;
 using Articy.Api.Plugins;
-using DocumentFormat.OpenXml.CustomProperties;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -18,6 +16,7 @@ namespace MyCompany.TestArticy
         public const string SettingsJsonName = "\\settings.json";
         public const string ConversationsJsonName = "\\conversations.json";
         public const string CharactersJsonName = "\\characters.json";
+        public const string BubbleTextsJsonName = "\\bubbleTexts.json";
         public const string AnswersJsonName = "\\answers.json";
         public const string AssetsPathForEmotions = "\\Assets\\ResourcesRaw\\Characters\\Emotions\\";
         public const string AssetsPathForEmoji = "\\Assets\\ResourcesRaw\\Characters\\Emoji\\";
@@ -70,6 +69,9 @@ namespace MyCompany.TestArticy
 
                 //собираем варианты ответов в диалогах
                 var playerChoises = mSession.RunQuery("SELECT * FROM Flow WHERE TemplateName= 'playerChoise'");
+                
+                //тут собираем все тексты для текст баблов
+                var bubbleTexts = mSession.RunQuery("SELECT * FROM Flow WHERE TemplateName = 'BubbleText'");
 
                 //обработка диалогов
                 foreach (var r in flow.Rows)
@@ -85,15 +87,20 @@ namespace MyCompany.TestArticy
                 //пробегаемся по диалогам и прокидываем в эмоции диалогов айди их персонажей
                 parser.FillEmotionsInConversations();
 
+                foreach (var bd in bubbleTexts.Rows)
+                    parser.ProcessBubbleTexts(bd);
+
                 //сериализуем и закидываем в юнити
                 {
                     string conversations = JsonConvert.SerializeObject(ConversationAdapter());
                     string characters = JsonConvert.SerializeObject(CharactersAdapter());
                     string answers = JsonConvert.SerializeObject(AnswersAdapter());
+                    string bubbleTextsToJson = JsonConvert.SerializeObject(BubbleTextsAdapter());
 
                     File.WriteAllText(dataDir.FullName + ConversationsJsonName, conversations);
                     File.WriteAllText(dataDir.FullName + CharactersJsonName, characters);
                     File.WriteAllText(dataDir.FullName + AnswersJsonName, answers);
+                    File.WriteAllText(dataDir.FullName + BubbleTextsJsonName, bubbleTextsToJson);
 
                     //копируем ассеты эмоций
                     CopyAssetsToUnity();
@@ -123,11 +130,20 @@ namespace MyCompany.TestArticy
                 conversationFacade.Add(e.EntityId, e);
 
             return conversationFacade;
+        }      
+        
+        private Dictionary<string, ArticyBubbleText> BubbleTextsAdapter()
+        {
+            Dictionary<string, ArticyBubbleText> conversationFacade = new Dictionary<string, ArticyBubbleText>(256);
+            foreach (var e in parser.ArticyBubbleTexts)
+                conversationFacade.Add(e.Id, e);
+
+            return conversationFacade;
         }
 
-        private Dictionary<long, ArticyAnswer> AnswersAdapter()
+        private Dictionary<string, ArticyAnswer> AnswersAdapter()
         {
-            Dictionary<long, ArticyAnswer> conversationFacade = new Dictionary<long, ArticyAnswer>(64);
+            Dictionary<string, ArticyAnswer> conversationFacade = new Dictionary<string, ArticyAnswer>(64);
             foreach (var e in parser.ArticyAnswers)
                 conversationFacade.Add(e.Id, e);
 

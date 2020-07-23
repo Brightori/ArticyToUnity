@@ -10,11 +10,13 @@ namespace MyCompany.TestArticy
         private List<ArticyConversation> conversations = new List<ArticyConversation>(64);
         private List<ArticyEntity> entities = new List<ArticyEntity>(64);
         private List<ArticyAnswer> articyAnswers = new List<ArticyAnswer>(64);
+        private List<ArticyBubbleText> articyBubbleTexts = new List<ArticyBubbleText>(256);
         private ApiSession apiSession;
 
         public ArticyConversation[] Conversations => conversations.ToArray();
         public ArticyEntity[] Entities => entities.ToArray();
         public ArticyAnswer[] ArticyAnswers => articyAnswers.ToArray();
+        public ArticyBubbleText[] ArticyBubbleTexts => articyBubbleTexts.ToArray();
 
         public Parser(ApiSession apiSession)
         {
@@ -26,7 +28,7 @@ namespace MyCompany.TestArticy
         {
             var conversation = new ArticyConversation();
 
-            conversation.ConversationId = "0x"+((long)child.Id).ToString("X16");
+            conversation.ConversationId = "0x" + ((long)child.Id).ToString("X16");
             conversations.Add(conversation);
 
             var childs = child.GetChildren();
@@ -90,16 +92,81 @@ namespace MyCompany.TestArticy
             }
         }
 
+        internal void ProcessBubbleTexts(ObjectProxy bd)
+        {
+            if (bd.HasProperty(ObjectPropertyNames.Text))
+            {
+                if (bd.GetText() == string.Empty)
+                    return;
+            }
+
+            var bubbleText = new ArticyBubbleText();
+            bubbleText.externalEntityId = (bd[ObjectPropertyNames.Speaker] as ObjectProxy).GetExternalId();
+            bubbleText.Id = "0x" + ((long)bd.Id).ToString("X16");
+            bubbleText.Text = StringFixed(bd.GetText());
+            bubbleText.ArticyAnimation = GetArticyAnimation(bd);
+            articyBubbleTexts.Add(bubbleText);
+        }
+
         public void ProcessPlayerChoices(ObjectProxy pc)
         {
             var answer = new ArticyAnswer();
 
-            answer.DisplayId = pc.GetDisplayName();
-            answer.Id = (long)pc.Id;
-            answer.Text = (string)pc[ObjectPropertyNames.Text];
+            answer.DisplayId = StringFixed(pc.GetDisplayName());
+            answer.Id = "0x" + ((long)pc.Id).ToString("X16");
+            answer.Text = StringFixed((string)pc[ObjectPropertyNames.Text]);
 
             articyAnswers.Add(answer);
         }
+
+        private ArticyAnimation3dControl GetArticyAnimation(ObjectProxy objectProxy)
+        {
+            if (!objectProxy.HasProperty("AnimationController3d.SettedBools"))
+                return default;
+
+            var animation = new ArticyAnimation3dControl();
+
+            var usedAnimation = objectProxy["AnimationController3d.UseAnimation"];
+            var settedBools = (objectProxy["AnimationController3d.SettedBools"] as List<ObjectProxy>);
+
+            var waitForStart = objectProxy["AnimationController3d.WaitBeforeStart"];
+            var boolTimeOut = objectProxy["AnimationController3d.BoolTimeOut"];
+
+            var intParamName = objectProxy["AnimationController3d.IntParamName"];
+            var intParamValue = objectProxy["AnimationController3d.IntParamValue"];
+
+            var floatParamName = objectProxy["AnimationController3d.FloatParamName"];
+            var floatParamValue = objectProxy["AnimationController3d.FloatParamValue"];
+
+            if (usedAnimation != null)
+            {
+                animation.UsedAnimation = (usedAnimation as ObjectProxy).GetDisplayName();
+            }
+
+            if (settedBools != null && settedBools.Count > 0)
+            {
+                foreach (var sb in settedBools)
+                    animation.SettedBools.Add(sb.GetDisplayName());
+            }
+
+            animation.WaitForStart = (float)(double)waitForStart;
+            animation.BoolTimeOut = (float)(double)boolTimeOut;
+
+            if (intParamName != null)
+            {
+                animation.IntParamName = GetEnumNameFromProperty("AnimationController3d.IntParamName", objectProxy);
+                animation.IntParamValue = intParamValue != null ? (int)intParamValue : 0;
+            }
+
+            if (floatParamName != null)
+            {
+                animation.FloatParamName = GetEnumNameFromProperty("AnimationController3d.FloatParamName", objectProxy);
+                animation.FloatParamValue = floatParamValue != null ? (float)(double)floatParamValue : 0;
+            }
+
+            return animation;
+        }
+
 
         private string GetEnumNameFromProperty(string propertyName, ObjectProxy objectProxy)
         {
@@ -153,6 +220,8 @@ namespace MyCompany.TestArticy
                 }
             }
 
+            dialogue.ArticyAnimation = GetArticyAnimation(objectProxy);
+
             if (objectProxy.HasProperty(ValuesHelper.ComicsEffect))
             {
                 var comicsEffect = objectProxy[ValuesHelper.ComicsEffect];
@@ -165,13 +234,15 @@ namespace MyCompany.TestArticy
                     dialogue.ArticyComicsEffect.DisplayId = StringFixed(objectProxyTemp.GetDisplayName());
                     dialogue.ArticyComicsEffect.Id = (long)objectProxyTemp.Id;
                     dialogue.ArticyComicsEffect.FileName = (string)objectProxyTemp[ObjectPropertyNames.Filename];
+                    dialogue.ArticyComicsEffect.ExternalId = (string)objectProxyTemp[ObjectPropertyNames.ExternalId];
+                    dialogue.ArticyComicsEffect.TimeOutComicsEffect = (float)(double)objectProxy[ValuesHelper.TimeoutComixEffect];
 
-                    if ((string)objectProxy[ObjectPropertyNames.TemplateName] == ValuesHelper.BubblePicture2d)
+                    if ((string)(comicsEffect as ObjectProxy)[ObjectPropertyNames.TemplateName] == ValuesHelper.DreamBubble2d)
                     {
-                        dialogue.ArticyComicsEffect.EffectType = ArticyComicsEffectType.DreamBubble;
-                    }   
-                    
-                    if ((string)objectProxy[ObjectPropertyNames.TemplateName] == ValuesHelper.Emotion2D)
+                        dialogue.ArticyComicsEffect.EffectType = ArticyComicsEffectType.DreamBubble2d;
+                    }
+
+                    if ((string)(comicsEffect as ObjectProxy)[ObjectPropertyNames.TemplateName] == ValuesHelper.Emotion2D)
                     {
                         dialogue.ArticyComicsEffect.EffectType = ArticyComicsEffectType.Emotion2d;
                     }
@@ -191,54 +262,11 @@ namespace MyCompany.TestArticy
                 }
             }
 
-            //настройка анимации
-            if (objectProxy.HasProperty("AnimationController3d.SettedBools"))
-            {
-                var usedAnimation = objectProxy["AnimationController3d.UseAnimation"];
-                var settedBools = (objectProxy["AnimationController3d.SettedBools"] as List<ObjectProxy>);
-
-                var waitForStart = objectProxy["AnimationController3d.WaitBeforeStart"];
-                var boolTimeOut = objectProxy["AnimationController3d.BoolTimeOut"];
-
-                var intParamName = objectProxy["AnimationController3d.IntParamName"];
-                var intParamValue = objectProxy["AnimationController3d.IntParamValue"];
-
-                var floatParamName = objectProxy["AnimationController3d.FloatParamName"];
-                var floatParamValue = objectProxy["AnimationController3d.FloatParamValue"];
-
-                var animation = dialogue.ArticyAnimation;
-
-                if (usedAnimation != null)
-                {
-                    animation.UsedAnimation = (usedAnimation as ObjectProxy).GetDisplayName();
-                }
-
-                if (settedBools != null && settedBools.Count > 0)
-                {
-                    foreach (var sb in settedBools)
-                        animation.SettedBools.Add(sb.GetDisplayName());
-                }
-
-                animation.WaitForStart = (float)(double)waitForStart;
-                animation.BoolTimeOut = (float)(double)boolTimeOut;
-
-                if (intParamName != null)
-                {
-                    animation.IntParamName = GetEnumNameFromProperty("AnimationController3d.IntParamName", objectProxy);
-                    animation.IntParamValue = intParamValue != null ?(int)intParamValue :0;
-                }
-
-                if (floatParamName != null)
-                {
-                    animation.FloatParamName = GetEnumNameFromProperty("AnimationController3d.FloatParamName", objectProxy);
-                    animation.FloatParamValue = floatParamValue != null ? (float)(double)floatParamValue : 0;
-                }
-            }
 
             //здесь берем тексты для реплики, пока заложил локализацию тоже
             if (objectProxy.HasProperty("Text"))
             {
-                dialogue.Text = (string)objectProxy["Text"];
+                dialogue.Text = StringFixed((string)objectProxy["Text"]);
             }
 
             if (objectProxy.HasProperty("ReplySettings.CharacterOrientSetting"))
@@ -263,13 +291,14 @@ namespace MyCompany.TestArticy
             }
         }
 
-        private string StringFixed(string id) => id.Replace("\"", " ");
+        private string StringFixed(string id) => id.Replace("\"", "'");
 
         internal void ProcessEntities(ObjectProxy r)
         {
             var entity = new ArticyEntity();
             entity.EntityId = (long)r.Id;
             entity.DisplayId = r.GetDisplayName();
+            entity.ExternalId = r.GetExternalId();
 
             //собираем все эмоции которые лежат в общей папке с главной ентити
             var emotions = apiSession.RunQuery($"SELECT * FROM Entities WHERE IsDescendantOf({r.GetParent().Id}) AND TemplateName == 'EmotionCharacters' ");
@@ -282,6 +311,7 @@ namespace MyCompany.TestArticy
                 emotion.EmotionId = (long)(e[ObjectPropertyNames.PreviewImageAsset] as ObjectProxy).Id;
                 emotion.EmotionFileName = (string)(e[ObjectPropertyNames.PreviewImageAsset] as ObjectProxy)[ObjectPropertyNames.Filename];
                 emotion.ParentEntityId = entity.EntityId;
+                emotion.ParentEntityExternalId = entity.ExternalId;
                 emotion.ParentEntityDisplayId = entity.DisplayId;
                 entity.Emotions.Add(emotion);
             }
