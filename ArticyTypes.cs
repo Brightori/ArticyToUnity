@@ -133,7 +133,7 @@ public class ArticyAnswer
 [Serializable]
 public class ArticyBubbleText
 {
-    public string externalEntityId;
+    public string ExternalEntityId;
     public string Id;
     public string Text;
     public float WaitBeforeStartBubble;

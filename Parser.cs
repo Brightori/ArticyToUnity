@@ -92,7 +92,7 @@ namespace MyCompany.TestArticy
             }
         }
 
-        internal void ProcessBubbleTexts(ObjectProxy bd)
+        public void ProcessBubbleTexts(ObjectProxy bd)
         {
             if (bd.HasProperty(ObjectPropertyNames.Text))
             {
@@ -101,10 +101,12 @@ namespace MyCompany.TestArticy
             }
 
             var bubbleText = new ArticyBubbleText();
-            bubbleText.externalEntityId = (bd[ObjectPropertyNames.Speaker] as ObjectProxy).GetExternalId();
+            bubbleText.ExternalEntityId = (bd[ObjectPropertyNames.Speaker] as ObjectProxy).GetExternalId();
             bubbleText.Id = "0x" + ((long)bd.Id).ToString("X16");
             bubbleText.Text = StringFixed(bd.GetText());
             bubbleText.ArticyAnimation = GetArticyAnimation(bd);
+            bubbleText.WaitBeforeStartBubble = (float)(double)bd["BubbleTextController.WaitBeforeStartBubble"];
+            bubbleText.BubbleViewTime = (float)(double)bd["BubbleTextController.BubbleViewTime"];
             articyBubbleTexts.Add(bubbleText);
         }
 
@@ -222,46 +224,27 @@ namespace MyCompany.TestArticy
 
             dialogue.ArticyAnimation = GetArticyAnimation(objectProxy);
 
+            //тут обрабатываем 2д баблы с эмоджи для персонажей диалога
             if (objectProxy.HasProperty(ValuesHelper.ComicsEffect))
             {
                 var comicsEffect = objectProxy[ValuesHelper.ComicsEffect];
 
                 if (comicsEffect != null)
                 {
-                    var objectProxyTemp = (comicsEffect as ObjectProxy);
-
-                    dialogue.ArticyComicsEffect = new ArticyComicsEffect();
-                    dialogue.ArticyComicsEffect.DisplayId = StringFixed(objectProxyTemp.GetDisplayName());
-                    dialogue.ArticyComicsEffect.Id = (long)objectProxyTemp.Id;
-                    dialogue.ArticyComicsEffect.FileName = (string)objectProxyTemp[ObjectPropertyNames.Filename];
-                    dialogue.ArticyComicsEffect.ExternalId = (string)objectProxyTemp[ObjectPropertyNames.ExternalId];
+                    dialogue.ArticyComicsEffect = ArticyComicsEffect(comicsEffect as ObjectProxy);
+                    //таймаут для комикс эффекта берем рядом в шаблоне
                     dialogue.ArticyComicsEffect.TimeOutComicsEffect = (float)(double)objectProxy[ValuesHelper.TimeoutComixEffect];
-
-                    if ((string)(comicsEffect as ObjectProxy)[ObjectPropertyNames.TemplateName] == ValuesHelper.DreamBubble2d)
-                    {
-                        dialogue.ArticyComicsEffect.EffectType = ArticyComicsEffectType.DreamBubble2d;
-                    }
-
-                    if ((string)(comicsEffect as ObjectProxy)[ObjectPropertyNames.TemplateName] == ValuesHelper.Emotion2D)
-                    {
-                        dialogue.ArticyComicsEffect.EffectType = ArticyComicsEffectType.Emotion2d;
-                    }
                 }
             }
 
+            //тут обрабатываем 2д баблы с эмоджи для 3д персонажей 
             if (objectProxy.HasProperty(ValuesHelper.BubblePicture))
             {
                 var bubblePicture = objectProxy[ValuesHelper.BubblePicture];
 
                 if (bubblePicture != null)
-                {
-                    dialogue.BubblePicture = new ArticyComicsEffect();
-                    dialogue.BubblePicture.DisplayId = StringFixed((bubblePicture as ObjectProxy).GetDisplayName());
-                    dialogue.BubblePicture.Id = (long)(bubblePicture as ObjectProxy).Id;
-                    dialogue.BubblePicture.FileName = (string)(bubblePicture as ObjectProxy)[ObjectPropertyNames.Filename];
-                }
+                    dialogue.BubblePicture = ArticyComicsEffect(bubblePicture as ObjectProxy);
             }
-
 
             //здесь берем тексты для реплики, пока заложил локализацию тоже
             if (objectProxy.HasProperty("Text"))
@@ -293,6 +276,35 @@ namespace MyCompany.TestArticy
 
         private string StringFixed(string id) => id.Replace("\"", "'");
 
+
+        private ArticyComicsEffect ArticyComicsEffect(ObjectProxy comicsEffect)
+        {
+            var articyEffect = new ArticyComicsEffect();
+
+            articyEffect.DisplayId = StringFixed(comicsEffect.GetDisplayName());
+            articyEffect.Id = (long)comicsEffect.Id;
+            articyEffect.FileName = (string)comicsEffect[ObjectPropertyNames.Filename];
+            articyEffect.ExternalId = (string)comicsEffect[ObjectPropertyNames.ExternalId];
+
+            if ((string)(comicsEffect as ObjectProxy)[ObjectPropertyNames.TemplateName] == ValuesHelper.DreamBubble2d)
+            {
+                articyEffect.EffectType = ArticyComicsEffectType.DreamBubble2d;
+            }
+
+            if ((string)(comicsEffect as ObjectProxy)[ObjectPropertyNames.TemplateName] == ValuesHelper.Emotion2D)
+            {
+                articyEffect.EffectType = ArticyComicsEffectType.Emotion2d;
+            }  
+            
+            if ((string)(comicsEffect as ObjectProxy)[ObjectPropertyNames.TemplateName] == "BubblePicture")
+            {
+                articyEffect.EffectType = ArticyComicsEffectType.Emoji3d;
+            }
+
+            return articyEffect;
+        }
+
+
         internal void ProcessEntities(ObjectProxy r)
         {
             var entity = new ArticyEntity();
@@ -322,6 +334,7 @@ namespace MyCompany.TestArticy
             {
                 ne.ParentEntityId = entity.EntityId;
                 ne.ParentEntityDisplayId = entity.DisplayId;
+                ne.ParentEntityExternalId = entity.ExternalId;
             }
             entities.Add(entity);
         }
