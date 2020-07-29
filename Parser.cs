@@ -169,7 +169,6 @@ namespace MyCompany.TestArticy
             return animation;
         }
 
-
         private string GetEnumNameFromProperty(string propertyName, ObjectProxy objectProxy)
         {
             var getFullProperty = apiSession.GetFeaturePropertyInfo(propertyName);
@@ -303,7 +302,6 @@ namespace MyCompany.TestArticy
 
             return articyEffect;
         }
-
 
         internal void ProcessEntities(ObjectProxy r)
         {

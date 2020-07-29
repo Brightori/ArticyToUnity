@@ -153,7 +153,7 @@ namespace MyCompany.TestArticy
         private void CopyAssetsToUnity()
         {
             var emotionsFolder = mSession.RunQuery($"SELECT * FROM Assets WHERE DisplayName == '2dEmotion'").Rows.FirstOrDefault();
-            var emoji = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'Emoji2dUnique'");
+            var emoji = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'DreamBubble'");
             var emojiStandart = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'Emoji2d'");
             var bubblePicture = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'BubblePicture'");
 
