@@ -1,5 +1,4 @@
 ﻿using Articy.Api;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,12 +10,14 @@ namespace MyCompany.TestArticy
         private List<ArticyEntity> entities = new List<ArticyEntity>(64);
         private List<ArticyAnswer> articyAnswers = new List<ArticyAnswer>(64);
         private List<ArticyBubbleText> articyBubbleTexts = new List<ArticyBubbleText>(256);
+        private List<ArticyQuest> articyQuests = new List<ArticyQuest>(64);
         private ApiSession apiSession;
 
         public ArticyConversation[] Conversations => conversations.ToArray();
         public ArticyEntity[] Entities => entities.ToArray();
         public ArticyAnswer[] ArticyAnswers => articyAnswers.ToArray();
         public ArticyBubbleText[] ArticyBubbleTexts => articyBubbleTexts.ToArray();
+        public ArticyQuest[] ArticyQuests => articyQuests.ToArray();
 
         public Parser(ApiSession apiSession)
         {
@@ -90,6 +91,136 @@ namespace MyCompany.TestArticy
                     }
                 }
             }
+        }
+
+        public void ProcessQuests(ObjectProxy q)
+        {
+            var quest = new ArticyQuest();
+
+            quest.Id = "0x" + ((long)q.Id).ToString("X16");
+            quest.LongId = (long)q.Id;
+            quest.DisplayId = q.GetDisplayName();
+
+            if (q[ObjectPropertyNames.PreviewImageAsset] != null)
+                quest.IconFileName = (string)(q[ObjectPropertyNames.PreviewImageAsset] as ObjectProxy)[ObjectPropertyNames.Filename];
+
+            var questAttachments = q[ObjectPropertyNames.Attachments] as List<ObjectProxy>;
+
+            if (questAttachments != null && questAttachments.Count > 0)
+            {
+                foreach (var go in questAttachments)
+                {
+                    int resourceType = (int)go["SingleResource.ResourceType"];
+                    float resourceamount = (float)(double)go["SingleResource.Amount"];
+                    quest.rewards.Add(new Сurrency { Type = resourceType, Amount = resourceamount });
+                }
+            }
+
+            if (q.HasProperty(ValuesHelper.BuildingToUpgrade))
+            {
+                var checkBuildingToUpgrade = q[ValuesHelper.BuildingToUpgrade];
+                if (checkBuildingToUpgrade != null)
+                {
+                    var upgrade = (checkBuildingToUpgrade as ObjectProxy);
+                    quest.UpgradeBuildingInfo.DisplayId = upgrade.GetDisplayName();
+                    quest.UpgradeBuildingInfo.Id = (long)upgrade.Id;
+                    quest.UpgradeBuildingInfo.ExternalId = upgrade.GetExternalId();
+                    quest.UpgradeBuildingInfo.FileInfo = (string)upgrade[ObjectPropertyNames.Filename];
+                }
+            }
+
+            articyQuests.Add(quest);
+        }
+
+        internal void ProcessConnections(List<ObjectProxy> rows)
+        {
+            ProcessQuestsConnections(rows);
+        }
+
+        private string ConvertLongIdToStringId(long id)
+        {
+            return "0x" + (id).ToString("X16");
+        }
+
+        private void ProcessQuestsConnections(List<ObjectProxy> rows)
+        {
+            foreach (var q in articyQuests)
+            {
+                //находим первые связи прикрепленные к квесту, идем по ним вниз
+                var startPoint = rows.Where(x => x[ObjectPropertyNames.Source] != null
+                    && (long)((x[ObjectPropertyNames.Source] as ObjectProxy).Id) == q.LongId).ToList(); ;
+                var test = rows.FirstOrDefault(x => (string)(x[ObjectPropertyNames.Target] as ObjectProxy)[ObjectPropertyNames.TemplateName] == "StandartQuest");
+
+                if (startPoint != null)
+                {
+                    foreach (var c in startPoint)
+                    {
+                        //тут рекурсивный поиск в глубину с костылем в виде доплиста для развлетвлений
+                        var list = rows.ToArray().ToList();
+                        var additionalList = new List<ObjectProxy>(256);
+                        var nextQuest = CalculateTargetQuests(c, list, additionalList);
+
+                        if (nextQuest != null || additionalList.Count > 0)
+                        {
+                            if (nextQuest != null)
+                                q.NextQuests.Add(ConvertLongIdToStringId((long)nextQuest.Id));
+
+                            foreach (var aq in additionalList)
+                            {
+                                if (aq != null)
+                                    q.NextQuests.Add(ConvertLongIdToStringId((long)aq.Id));
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            //тут проходимся и заполняем входящие квесты
+            foreach (var q in articyQuests)
+            {
+                foreach (var nq in q.NextQuests)
+                {
+                    var neededQuest = articyQuests.FirstOrDefault(x => x.Id == nq);
+                    neededQuest.PreviousQuests.Add(q.Id);
+                }
+            }
+
+            int tttt = 0;
+        }
+
+        private ObjectProxy CalculateTargetQuests(ObjectProxy startPoint, List<ObjectProxy> rows, List<ObjectProxy> additionalList)
+        {
+            if (startPoint == null || startPoint[ObjectPropertyNames.Target] == null || rows == null || rows.Count == 0)
+                return default;
+
+            if ((string)(startPoint[ObjectPropertyNames.Target] as ObjectProxy)[ObjectPropertyNames.TemplateName] == "StandartQuest")
+            {
+                return (startPoint[ObjectPropertyNames.Target] as ObjectProxy);
+            }
+            else
+            {
+                var currentTarget = (startPoint[ObjectPropertyNames.Target] as ObjectProxy).Id;
+                var connection = rows.Where(x => (x[ObjectPropertyNames.Source] as ObjectProxy).Id == currentTarget).ToArray();
+
+                if (connection.Length == 0)
+                    return default;
+
+                if (connection.Length == 1)
+                {
+                    rows.Remove(connection[0]);
+                    return CalculateTargetQuests(connection[0], rows, additionalList);
+                }
+                else 
+                {
+                    foreach (var c in connection)
+                        rows.Remove(c);
+                    foreach (var c in connection)
+                        additionalList.Add(CalculateTargetQuests(c, rows, additionalList));
+                }
+            }
+
+            return default;
         }
 
         public void ProcessBubbleTexts(ObjectProxy bd)
@@ -293,8 +424,8 @@ namespace MyCompany.TestArticy
             if ((string)(comicsEffect as ObjectProxy)[ObjectPropertyNames.TemplateName] == ValuesHelper.Emotion2D)
             {
                 articyEffect.EffectType = ArticyComicsEffectType.Emotion2d;
-            }  
-            
+            }
+
             if ((string)(comicsEffect as ObjectProxy)[ObjectPropertyNames.TemplateName] == "BubblePicture")
             {
                 articyEffect.EffectType = ArticyComicsEffectType.Emoji3d;

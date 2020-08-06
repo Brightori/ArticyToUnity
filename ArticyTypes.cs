@@ -141,6 +141,40 @@ public class ArticyBubbleText
     public ArticyAnimation3dControl ArticyAnimation = new ArticyAnimation3dControl();
 }
 
+[Serializable]
+public class ArticyQuest
+{
+    public string Id;
+    public long LongId;
+    public string DisplayId;
+    public string IconFileName;
+    public bool startComix;
+
+    public Сurrency Cost;
+
+    public UpgradeBuildingInfo UpgradeBuildingInfo = new UpgradeBuildingInfo(); 
+    public List<Сurrency> rewards = new List<Сurrency>(4);
+
+    public List<string> PreviousQuests = new List<string>(4);
+    public List<string> NextQuests = new List<string>(4);
+}
+
+[Serializable]
+public struct Сurrency
+{
+    public int Type;
+    public float Amount;
+}
+
+[Serializable]
+public class UpgradeBuildingInfo
+{
+    public long Id;
+    public string DisplayId;
+    public string ExternalId;
+    public string FileInfo;
+}
+
 public enum ArticyComicsEffectType
 {
     Default = 0,
@@ -168,4 +202,7 @@ public class ValuesHelper
     public const string Emotion2D = "Emotion2D";
     public const string BubblePicture = "AnimationController3d.BubblePicture";
     public const string TimeoutComixEffect = "ReplySettings.TimeoutComixEffect";
+    public const string QuestIcon = "QuestIcon";
+    public const string BuildingToUpgrade = "RewardQuest.BuildingToUpgrade";
+    public const string FileName = "FileName";
 }

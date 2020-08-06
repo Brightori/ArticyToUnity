@@ -21,6 +21,12 @@ namespace MyCompany.TestArticy
         public const string AssetsPathForEmotions = "\\Assets\\ResourcesRaw\\Characters\\Emotions\\";
         public const string AssetsPathForEmoji = "\\Assets\\ResourcesRaw\\Characters\\Emoji\\";
 
+        private Dictionary<int, string> ResourcesKeys = new Dictionary<int, string>()
+        {
+            {0, "money" },
+        };
+
+
         private Parser parser;
         private readonly ApiSession mSession;
 
@@ -63,30 +69,43 @@ namespace MyCompany.TestArticy
 
                 //собираем все диалоги 
                 var flow = mSession.RunQuery("SELECT * FROM Flow WHERE ObjectType=Dialogue");
+                var connections = mSession.RunQuery("SELECT * FROM Flow WHERE ObjectType=Connection");
 
                 //собираем всех персонажей
                 var mainCharacters = mSession.RunQuery("SELECT * FROM Entities WHERE TemplateName= 'MainCharacters'");
 
                 //собираем варианты ответов в диалогах
                 var playerChoises = mSession.RunQuery("SELECT * FROM Flow WHERE TemplateName= 'playerChoise'");
-                
+
                 //тут собираем все тексты для текст баблов
                 var bubbleTexts = mSession.RunQuery("SELECT * FROM Flow WHERE TemplateName = 'BubbleText'");
+
+                //удивительно, но тут мы собираем квесты
+                var quests = mSession.RunQuery("SELECT * FROM Flow WHERE TemplateName = 'StandartQuest'");
 
                 //обработка диалогов
                 foreach (var r in flow.Rows)
                     parser.ProcessDialogues(r);
 
+                //обработка квестов
+                foreach (var q in quests.Rows)
+                    parser.ProcessQuests(q);
+
                 //обработка персонажей
                 foreach (var r in mainCharacters.Rows)
                     parser.ProcessEntities(r);
 
+                //обработка ответов
                 foreach (var pc in playerChoises.Rows)
                     parser.ProcessPlayerChoices(pc);
+
+                //сюда заталкиваем все связи вообще, чтобы например прокинуть для квестов линки
+                parser.ProcessConnections(connections.Rows);
 
                 //пробегаемся по диалогам и прокидываем в эмоции диалогов айди их персонажей
                 parser.FillEmotionsInConversations();
 
+                //обрабатываем баблы
                 foreach (var bd in bubbleTexts.Rows)
                     parser.ProcessBubbleTexts(bd);
 
@@ -130,8 +149,8 @@ namespace MyCompany.TestArticy
                 conversationFacade.Add(e.EntityId, e);
 
             return conversationFacade;
-        }      
-        
+        }
+
         private Dictionary<string, ArticyBubbleText> BubbleTextsAdapter()
         {
             Dictionary<string, ArticyBubbleText> conversationFacade = new Dictionary<string, ArticyBubbleText>(256);
@@ -148,6 +167,19 @@ namespace MyCompany.TestArticy
                 conversationFacade.Add(e.Id, e);
 
             return conversationFacade;
+        }
+
+        private Dictionary<string, object> ArticyDictionaryAdapter()
+        {
+            var dict = new Dictionary<string, object>(100);
+            var quests = parser.ArticyQuests;
+
+            foreach (var q in quests)
+            {
+
+            }
+
+            return default;
         }
 
         private void CopyAssetsToUnity()
@@ -167,7 +199,8 @@ namespace MyCompany.TestArticy
             {
                 DirectoryInfo charDir = new DirectoryInfo(savePath + AssetsPathForEmotions + $@"\{c.GetDisplayName()}\");
                 if (!charDir.Exists) charDir.Create();
-
+                
+                //это выборка эмоций лежащих в той же папке что и ентити (персонаж) 
                 var images = mSession.RunQuery($"SELECT * FROM Assets WHERE IsDescendantOf({c.Id}) AND TemplateName == 'EmotionTextures'");
                 var emotions = parser.Entities.SelectMany(x => x.Emotions).ToList();
 
@@ -216,8 +249,8 @@ namespace MyCompany.TestArticy
 
                 SaveToPath(assetFile, AssetsPathForEmoji, ((long)e.Id).ToString());
             }
-        } 
-        
+        }
+
         private void SaveEmoji(List<ObjectProxy> emojies)
         {
             foreach (var e in emojies)

@@ -88,6 +88,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
+    <Compile Include="SerializeUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

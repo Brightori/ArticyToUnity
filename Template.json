@@ -1,0 +1,69 @@
+{
+    "<rootQuestId>": {
+        "displayId": "Intro",
+        "type": "concrete-grade",
+        "acceptable": true,
+        "complete-price": {
+            "type": "simple-resource",
+            "path": "simple-resources.<resourceId>",
+            "amount": <priceAmount>
+        },
+        "reward": {
+            "type" :"composite",
+            "rewards":[
+                {
+                    "type": "upgrade-building",
+                    "path": "cities.0.sectors.0.composite-buildings.townhall.buildings.0"
+                },
+                
+                {
+                    "type":"night",
+                    "night": false,
+                    "color": "FFFFFF",
+                    "characters": true,
+                    "buildings": true
+                }
+            ]
+        },
+        "accepted-reward": {
+            "type": "composite",
+            "rewards":
+            [
+                {
+                    "type":"requirement",
+                    "reward": 
+                    {
+                        "type": "composite",
+                        "rewards":
+                        [
+                            {
+                                "type": "enable-trigger",
+                                "path": "triggers.<questId>"
+                            }
+                        ]
+                    },
+                    "requirement":
+                    {
+                            "type": "and",
+                            "requirements": 
+                            [
+                                {
+                                    "type": "trigger-state",
+                                    "state": "Accepted",
+                                    "path":"triggers.<questId>"
+                                }
+                            ]
+                    }
+                },
+                {
+                    "type": "simple-resource",
+                    "path": "simple-resources.completed-quests",
+                    "amount": {
+                        "type": "simple",
+                        "amount": 1
+                    }
+                }
+            ]
+        }
+    }
+}
