@@ -23,6 +23,19 @@ public class ArticyEntitiesData
     }
 }
 
+[Serializable] //NightSettings
+public class ArticyNightSettings
+{
+    public string FromColor;
+    public string ToColor;
+    public bool AffectBuildings;
+    public bool AffectCharacters;
+    public float Duration = 2f;
+    public bool DisableAfterCompletion;
+}
+
+
+
 [Serializable]
 public class ArticyConversation
 {
@@ -100,7 +113,7 @@ public class ArticyDialogStep
 
     //сюда мы берем данные с поля BubblePicture это для 3д персонажей
     public ArticyComicsEffect BubblePicture;
-    
+
     //это тип диалог шага, тут мы узнаем кто говорит, кто на вторых ролях и тд
     public DialogStepType DialogStepType;
 
@@ -151,19 +164,30 @@ public class ArticyQuest
     public bool startComix;
 
     public Сurrency Cost;
-
-    public UpgradeBuildingInfo UpgradeBuildingInfo = new UpgradeBuildingInfo(); 
-    public List<Сurrency> rewards = new List<Сurrency>(4);
+    public ArticyNightSettings NightSettings = new ArticyNightSettings();
+    public UpgradeBuildingInfo UpgradeBuildingInfo = new UpgradeBuildingInfo();
+    public List<Item> rewards = new List<Item>(4);
 
     public List<string> PreviousQuests = new List<string>(4);
     public List<string> NextQuests = new List<string>(4);
 }
 
-[Serializable]
-public struct Сurrency
+
+public abstract class Item
 {
-    public int Type;
-    public float Amount;
+    public abstract int Type { get; }
+    public abstract float Amount { get; }
+}
+
+[Serializable]
+public class Сurrency : Item
+{
+    public int CurrentType;
+    public float CurrentAmount;
+
+    public override int Type => CurrentType;
+
+    public override float Amount => CurrentAmount;
 }
 
 [Serializable]
@@ -178,9 +202,9 @@ public class UpgradeBuildingInfo
 public enum ArticyComicsEffectType
 {
     Default = 0,
-    Emotion2d =1, 
-    Emoji3d =2, 
-    DreamBubble2d =3,
+    Emotion2d = 1,
+    Emoji3d = 2,
+    DreamBubble2d = 3,
 }
 
 public enum DialogStepType
@@ -205,4 +229,17 @@ public class ValuesHelper
     public const string QuestIcon = "QuestIcon";
     public const string BuildingToUpgrade = "RewardQuest.BuildingToUpgrade";
     public const string FileName = "FileName";
+    public const string SimpleReward = "SimpleReward";
+    public const string SimpleRewardResourceType = "SimpleReward.RewardType";
+    public const string SimpleRewardAmount = "SimpleReward.Amount";
+    public const string SimpleResource = "SimpleResource";
+    public const string SimpleResourceResourceType = "SimpleResource.ResourceType";
+    public const string SimpleResourceAmount = "SimpleResource.Amount";
+    public const string NightSettings = "NightSettings";
+    public const string NightSettingsDuration = "NightSettings.Duration";
+    public const string NightSettingsDisableNightAfterCompletion = "NightSettings.DisableNightAfterCompletion";
+    public const string NightSettingsAffectCharacters = "NightSettings.AffectCharacters";
+    public const string NightSettingsAffectBuildings = "NightSettings.AffectBuildings";
+    public const string NightSettingsToColor = "NightSettings.ToColor";
+    public const string NightSettingsFromColor = "NightSettings.FromColor";
 }

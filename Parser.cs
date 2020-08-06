@@ -110,9 +110,28 @@ namespace MyCompany.TestArticy
             {
                 foreach (var go in questAttachments)
                 {
-                    int resourceType = (int)go["SingleResource.ResourceType"];
-                    float resourceamount = (float)(double)go["SingleResource.Amount"];
-                    quest.rewards.Add(new Сurrency { Type = resourceType, Amount = resourceamount });
+                    var name = go[ObjectPropertyNames.TemplateName];
+                    if (string.Equals(name, ValuesHelper.SimpleResource))
+                    {
+                        int resourceType = (int)go[ValuesHelper.SimpleResourceResourceType];
+                        float resourceamount = (float)(double)go[ValuesHelper.SimpleResourceAmount];
+                        quest.Cost = new Сurrency { CurrentType = resourceType, CurrentAmount = resourceamount };
+                    }
+                    else if (string.Equals(name, ValuesHelper.SimpleReward))
+                    {
+                        int resourceType = (int)go[ValuesHelper.SimpleRewardResourceType];
+                        float resourceamount = (float)(double)go[ValuesHelper.SimpleRewardAmount];
+                        quest.rewards.Add(new Сurrency { CurrentType = resourceType, CurrentAmount = resourceamount });
+                    }
+                    else if (string.Equals(name, ValuesHelper.NightSettings))
+                    {
+                        quest.NightSettings.Duration = (float)(double)go[ValuesHelper.NightSettingsDuration];
+                        quest.NightSettings.DisableAfterCompletion = (bool)go[ValuesHelper.NightSettingsDisableNightAfterCompletion];
+                        quest.NightSettings.AffectCharacters = (bool)go[ValuesHelper.NightSettingsAffectCharacters];
+                        quest.NightSettings.AffectBuildings = (bool)go[ValuesHelper.NightSettingsAffectBuildings];
+                        quest.NightSettings.ToColor = (string)go[ValuesHelper.NightSettingsToColor];
+                        quest.NightSettings.FromColor = (string)go[ValuesHelper.NightSettingsFromColor];
+                    }
                 }
             }
 
@@ -211,7 +230,7 @@ namespace MyCompany.TestArticy
                     rows.Remove(connection[0]);
                     return CalculateTargetQuests(connection[0], rows, additionalList);
                 }
-                else 
+                else
                 {
                     foreach (var c in connection)
                         rows.Remove(c);

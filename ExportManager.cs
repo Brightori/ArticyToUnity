@@ -61,7 +61,8 @@ namespace MyCompany.TestArticy
                     return;
                 }
 
-                DirectoryInfo dataDir = new DirectoryInfo(outDir.FullName + @"\_data\view");
+                DirectoryInfo dataViewDir = new DirectoryInfo(outDir.FullName + @"\_data\view");
+                DirectoryInfo dataGameDir = new DirectoryInfo(outDir.FullName + @"\_data\game");
                 //if (!pluginsDir.Exists) pluginsDir.Create();
 
                 // prepare export run
@@ -116,10 +117,10 @@ namespace MyCompany.TestArticy
                     string answers = JsonConvert.SerializeObject(AnswersAdapter());
                     string bubbleTextsToJson = JsonConvert.SerializeObject(BubbleTextsAdapter());
 
-                    File.WriteAllText(dataDir.FullName + ConversationsJsonName, conversations);
-                    File.WriteAllText(dataDir.FullName + CharactersJsonName, characters);
-                    File.WriteAllText(dataDir.FullName + AnswersJsonName, answers);
-                    File.WriteAllText(dataDir.FullName + BubbleTextsJsonName, bubbleTextsToJson);
+                    File.WriteAllText(dataViewDir.FullName + ConversationsJsonName, conversations);
+                    File.WriteAllText(dataViewDir.FullName + CharactersJsonName, characters);
+                    File.WriteAllText(dataViewDir.FullName + AnswersJsonName, answers);
+                    File.WriteAllText(dataViewDir.FullName + BubbleTextsJsonName, bubbleTextsToJson);
 
                     //копируем ассеты эмоций
                     CopyAssetsToUnity();
@@ -199,7 +200,7 @@ namespace MyCompany.TestArticy
             {
                 DirectoryInfo charDir = new DirectoryInfo(savePath + AssetsPathForEmotions + $@"\{c.GetDisplayName()}\");
                 if (!charDir.Exists) charDir.Create();
-                
+
                 //это выборка эмоций лежащих в той же папке что и ентити (персонаж) 
                 var images = mSession.RunQuery($"SELECT * FROM Assets WHERE IsDescendantOf({c.Id}) AND TemplateName == 'EmotionTextures'");
                 var emotions = parser.Entities.SelectMany(x => x.Emotions).ToList();

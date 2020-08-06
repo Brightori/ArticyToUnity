@@ -3,7 +3,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <StartAction>Program</StartAction>
     <StartProgram>C:\Program Files\articy draft 3\bin\ArticyDraft.exe</StartProgram>
-    <StartArguments>-nosplash -multiuser -loglevel3 -api.plugin.log -api.DebugManifest "C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\PluginManifest.xml"</StartArguments>
+    <StartArguments>-nosplash -multiuser -loglevel3 -api.plugin.log -api.DebugManifest "..\..\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\PluginManifest.xml"</StartArguments>
     <EnableUnmanagedDebugging>true</EnableUnmanagedDebugging>
   </PropertyGroup>
 </Project>
