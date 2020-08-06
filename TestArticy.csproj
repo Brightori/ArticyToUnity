@@ -20,7 +20,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\</OutputPath>
+    <OutputPath>..\..\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
