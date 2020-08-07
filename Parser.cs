@@ -110,20 +110,20 @@ namespace MyCompany.TestArticy
             {
                 foreach (var go in questAttachments)
                 {
-                    var name = go[ObjectPropertyNames.TemplateName];
-                    if (string.Equals(name, ValuesHelper.SimpleResource))
+                    var name = (string) go[ObjectPropertyNames.TemplateName];
+                    if (name == ValuesHelper.SimpleResource)
                     {
                         int resourceType = (int)go[ValuesHelper.SimpleResourceResourceType];
                         float resourceamount = (float)(double)go[ValuesHelper.SimpleResourceAmount];
                         quest.Cost = new Сurrency { CurrentType = resourceType, CurrentAmount = resourceamount };
                     }
-                    else if (string.Equals(name, ValuesHelper.SimpleReward))
+                    else if (name == ValuesHelper.SimpleReward)
                     {
                         int resourceType = (int)go[ValuesHelper.SimpleRewardResourceType];
                         float resourceamount = (float)(double)go[ValuesHelper.SimpleRewardAmount];
                         quest.rewards.Add(new Сurrency { CurrentType = resourceType, CurrentAmount = resourceamount });
                     }
-                    else if (string.Equals(name, ValuesHelper.NightSettings))
+                    else if (name == ValuesHelper.NightSettings)
                     {
                         quest.NightSettings.Duration = (float)(double)go[ValuesHelper.NightSettingsDuration];
                         quest.NightSettings.DisableAfterCompletion = (bool)go[ValuesHelper.NightSettingsDisableNightAfterCompletion];
