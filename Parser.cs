@@ -111,8 +111,8 @@ namespace MyCompany.TestArticy
 
             result.ActivateComix = quest.Id;
             result.Text = quest.DisplayId;
+            result.Title = quest.DisplayId;
             result.Image = quest.IconFileName;
-            result.Text = quest.DisplayId;
 
             return result;
         }
@@ -139,14 +139,14 @@ namespace MyCompany.TestArticy
                     if (name == ValuesHelper.SimpleResource)
                     {
                         string resourceType = ((int)go[ValuesHelper.SimpleResourceResourceType]).ToString();
-                        int resourceamount = (int)go[ValuesHelper.SimpleResourceAmount];
+                        int resourceamount = (int)(double)go[ValuesHelper.SimpleResourceAmount];
                         quest.Cost = new Сurrency { Type = resourceType, Amount = resourceamount };
                     }
                     else if (name == ValuesHelper.SimpleReward)
                     {
                         string resourceType = ((int)go[ValuesHelper.SimpleRewardResourceType]).ToString();
-                        int resourceamount = (int)go[ValuesHelper.SimpleRewardAmount];
-                        quest.acceptedRewards.Add(new SimpleReward { Amount = resourceamount });
+                        int resourceamount = (int)(double)go[ValuesHelper.SimpleRewardAmount];
+                        quest.acceptedRewards.Add(new SimpleReward { Type = resourceType, Amount = resourceamount });
                     }
                     else if (name == ValuesHelper.NightSettings)
                     {
