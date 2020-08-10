@@ -1,6 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 
+public interface IPrice
+{
+    string Type { get; }
+    int Amount { get; }
+
+}
+
+public interface IRequirement
+{
+    string Type { get; }
+}
+
+public interface IReward
+{
+    string Type { get; }
+}
+
 [Serializable]
 public class ArticyConversationsData
 {
@@ -24,8 +41,10 @@ public class ArticyEntitiesData
 }
 
 [Serializable] //NightSettings
-public class ArticyNightSettings
+public class ArticyNightSettings : IReward
 {
+    public string Type => "night";
+
     public string FromColor;
     public string ToColor;
     public bool AffectBuildings;
@@ -33,7 +52,6 @@ public class ArticyNightSettings
     public float Duration = 2f;
     public bool DisableAfterCompletion;
 }
-
 
 
 [Serializable]
@@ -159,6 +177,35 @@ public class ArticyBubbleText
 }
 
 [Serializable]
+public class SimpleReward : IReward
+{
+    public int Amount { get; set; }
+
+    public string Type { get; set; }
+}
+
+[Serializable]
+public class TriggerDescription
+{
+    public bool StartComix { get; set; }
+    public string DisplayId { get; set; }
+    public bool Acceptable { get; } = true;
+    public IPrice CompletePrice { get; set; }
+    public List<IReward> Reward { get; set; }
+    public List<IReward> AcceptedReward { get; set; }
+}
+
+[Serializable]
+public class TriggerViewDescription
+{
+    public string Image { get; set; }
+    public string Text { get; set; }
+    public string Title { get; set; }
+    public string ActivateComix { get; set; }
+}
+
+
+[Serializable]
 public class ArticyQuest
 {
     public string Id;
@@ -167,10 +214,9 @@ public class ArticyQuest
     public string IconFileName;
     public bool startComix;
 
-    public Сurrency Cost;
-    public ArticyNightSettings NightSettings = new ArticyNightSettings();
-    public UpgradeBuildingInfo UpgradeBuildingInfo = new UpgradeBuildingInfo();
-    public List<Item> rewards = new List<Item>(4);
+    public IPrice Cost;
+    public List<IReward> rewards = new List<IReward>(4);
+    public List<IReward> acceptedRewards = new List<IReward>(4);
 
     public List<string> PreviousQuests = new List<string>(4);
     public List<string> NextQuests = new List<string>(4);
@@ -185,30 +231,23 @@ public class ArticyQuestLink
     public string IconFileName;
 }
 
-public abstract class Item
+[Serializable]
+public class Сurrency : IPrice
 {
-    public abstract int Type { get; }
-    public abstract float Amount { get; }
+    public string Type { get; set; }
+
+    public int Amount { get; set; }
 }
 
 [Serializable]
-public class Сurrency : Item
-{
-    public int CurrentType;
-    public float CurrentAmount;
-
-    public override int Type => CurrentType;
-
-    public override float Amount => CurrentAmount;
-}
-
-[Serializable]
-public class UpgradeBuildingInfo
+public class UpgradeBuildingInfo : IReward
 {
     public long Id;
     public string DisplayId;
     public string ExternalId;
     public string FileInfo;
+
+    public string Type { get; set; }
 }
 
 public enum ArticyComicsEffectType

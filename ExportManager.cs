@@ -20,6 +20,8 @@ namespace MyCompany.TestArticy
         public const string AnswersJsonName = "\\answers.json";
         public const string AssetsPathForEmotions = "\\Assets\\ResourcesRaw\\Characters\\Emotions\\";
         public const string AssetsPathForEmoji = "\\Assets\\ResourcesRaw\\Characters\\Emoji\\";
+        public const string QuestTextJsomName = "\\quest.json";
+        public const string TriggersTextJsomName = "\\testTriggers.json";
 
         private Dictionary<int, string> ResourcesKeys = new Dictionary<int, string>()
         {
@@ -116,12 +118,19 @@ namespace MyCompany.TestArticy
                     string characters = JsonConvert.SerializeObject(CharactersAdapter());
                     string answers = JsonConvert.SerializeObject(AnswersAdapter());
                     string bubbleTextsToJson = JsonConvert.SerializeObject(BubbleTextsAdapter());
+                    string questTextToJson = JsonConvert.SerializeObject(QuestAdapter());
+
+                    string tiggersTextToJson = JsonConvert.SerializeObject(TriggersAdapter());
+                    string triggersViewTextToJson = JsonConvert.SerializeObject(TriggersViewAdapter());
+
 
                     File.WriteAllText(dataViewDir.FullName + ConversationsJsonName, conversations);
                     File.WriteAllText(dataViewDir.FullName + CharactersJsonName, characters);
                     File.WriteAllText(dataViewDir.FullName + AnswersJsonName, answers);
                     File.WriteAllText(dataViewDir.FullName + BubbleTextsJsonName, bubbleTextsToJson);
-
+                    File.WriteAllText(dataGameDir.FullName + QuestTextJsomName, questTextToJson);
+                    File.WriteAllText(dataViewDir.FullName + TriggersTextJsomName, triggersViewTextToJson);
+                    File.WriteAllText(dataGameDir.FullName + TriggersTextJsomName, tiggersTextToJson);
                     //копируем ассеты эмоций
                     CopyAssetsToUnity();
                 }
@@ -151,6 +160,35 @@ namespace MyCompany.TestArticy
 
             return conversationFacade;
         }
+
+        private Dictionary<string, ArticyQuest> QuestAdapter()
+        {
+            Dictionary<string, ArticyQuest> conversationFacade = new Dictionary<string, ArticyQuest>(64);
+            foreach (var e in parser.ArticyQuests)
+                conversationFacade.Add(e.Id, e);
+
+            return conversationFacade;
+        }
+
+
+        private Dictionary<string, TriggerDescription> TriggersAdapter()
+        {
+            Dictionary<string, TriggerDescription> conversationFacade = new Dictionary<string, TriggerDescription>(64);
+            foreach (var e in parser.ArticyQuests)
+                conversationFacade.Add(e.Id, parser.ConvertArticyQuestToTriggerDescription(e));
+
+            return conversationFacade;
+        }
+
+        private Dictionary<string, TriggerViewDescription> TriggersViewAdapter()
+        {
+            Dictionary<string, TriggerViewDescription> conversationFacade = new Dictionary<string, TriggerViewDescription>(64);
+            foreach (var e in parser.ArticyQuests)
+                conversationFacade.Add(e.Id, parser.ConvertArticyQuestToTriggerViewDescription(e));
+
+            return conversationFacade;
+        }
+
 
         private Dictionary<string, ArticyBubbleText> BubbleTextsAdapter()
         {

@@ -97,6 +97,31 @@ namespace MyCompany.TestArticy
             }
         }
 
+        public TriggerDescription ConvertArticyQuestToTriggerDescription(ArticyQuest quest)
+        {
+            var result = new TriggerDescription();
+
+            result.AcceptedReward = quest.acceptedRewards;
+            result.CompletePrice = quest.Cost;
+            result.Reward = quest.rewards;
+            result.DisplayId = quest.DisplayId;
+            
+            return result;
+        }
+
+        public TriggerViewDescription ConvertArticyQuestToTriggerViewDescription(ArticyQuest quest)
+        {
+            var result = new TriggerViewDescription();
+
+            result.ActivateComix = quest.Id;
+            result.Text = quest.DisplayId;
+            result.Title = quest.DisplayId;
+            result.Image = quest.IconFileName;
+
+            return result;
+        }
+
+
         public void ProcessQuests(ObjectProxy q)
         {
             var quest = new ArticyQuest();
@@ -114,27 +139,31 @@ namespace MyCompany.TestArticy
             {
                 foreach (var go in questAttachments)
                 {
-                    var name = go[ObjectPropertyNames.TemplateName];
-                    if (string.Equals(name, ValuesHelper.SimpleResource))
+                    var name = (string) go[ObjectPropertyNames.TemplateName];
+                    if (name == ValuesHelper.SimpleResource)
                     {
-                        int resourceType = (int)go[ValuesHelper.SimpleResourceResourceType];
-                        float resourceamount = (float)(double)go[ValuesHelper.SimpleResourceAmount];
-                        quest.Cost = new Сurrency { CurrentType = resourceType, CurrentAmount = resourceamount };
+                        string resourceType = ((int)go[ValuesHelper.SimpleResourceResourceType]).ToString();
+                        int resourceamount = (int)(double)go[ValuesHelper.SimpleResourceAmount];
+                        quest.Cost = new Сurrency { Type = resourceType, Amount = resourceamount };
                     }
-                    else if (string.Equals(name, ValuesHelper.SimpleReward))
+                    else if (name == ValuesHelper.SimpleReward)
                     {
-                        int resourceType = (int)go[ValuesHelper.SimpleRewardResourceType];
-                        float resourceamount = (float)(double)go[ValuesHelper.SimpleRewardAmount];
-                        quest.rewards.Add(new Сurrency { CurrentType = resourceType, CurrentAmount = resourceamount });
+                        string resourceType = ((int)go[ValuesHelper.SimpleRewardResourceType]).ToString();
+                        int resourceamount = (int)(double)go[ValuesHelper.SimpleRewardAmount];
+                        quest.acceptedRewards.Add(new SimpleReward { Type = resourceType, Amount = resourceamount });
                     }
-                    else if (string.Equals(name, ValuesHelper.NightSettings))
+                    else if (name == ValuesHelper.NightSettings)
                     {
-                        quest.NightSettings.Duration = (float)(double)go[ValuesHelper.NightSettingsDuration];
-                        quest.NightSettings.DisableAfterCompletion = (bool)go[ValuesHelper.NightSettingsDisableNightAfterCompletion];
-                        quest.NightSettings.AffectCharacters = (bool)go[ValuesHelper.NightSettingsAffectCharacters];
-                        quest.NightSettings.AffectBuildings = (bool)go[ValuesHelper.NightSettingsAffectBuildings];
-                        quest.NightSettings.ToColor = (string)go[ValuesHelper.NightSettingsToColor];
-                        quest.NightSettings.FromColor = (string)go[ValuesHelper.NightSettingsFromColor];
+                        var nightSettings = new ArticyNightSettings();
+
+                        nightSettings.Duration = (float)(double)go[ValuesHelper.NightSettingsDuration];
+                        nightSettings.DisableAfterCompletion = (bool)go[ValuesHelper.NightSettingsDisableNightAfterCompletion];
+                        nightSettings.AffectCharacters = (bool)go[ValuesHelper.NightSettingsAffectCharacters];
+                        nightSettings.AffectBuildings = (bool)go[ValuesHelper.NightSettingsAffectBuildings];
+                        nightSettings.ToColor = (string)go[ValuesHelper.NightSettingsToColor];
+                        nightSettings.FromColor = (string)go[ValuesHelper.NightSettingsFromColor];
+
+                        quest.rewards.Add(nightSettings);
                     }
                 }
             }
@@ -145,10 +174,13 @@ namespace MyCompany.TestArticy
                 if (checkBuildingToUpgrade != null)
                 {
                     var upgrade = (checkBuildingToUpgrade as ObjectProxy);
-                    quest.UpgradeBuildingInfo.DisplayId = upgrade.GetDisplayName();
-                    quest.UpgradeBuildingInfo.Id = (long)upgrade.Id;
-                    quest.UpgradeBuildingInfo.ExternalId = upgrade.GetExternalId();
-                    quest.UpgradeBuildingInfo.FileInfo = (string)upgrade[ObjectPropertyNames.Filename];
+                    var upgradeInfo = new UpgradeBuildingInfo();
+                    upgradeInfo.DisplayId = upgrade.GetDisplayName();
+                    upgradeInfo.Id = (long)upgrade.Id;
+                    upgradeInfo.ExternalId = upgrade.GetExternalId();
+                    upgradeInfo.FileInfo = (string)upgrade[ObjectPropertyNames.Filename];
+
+                    quest.rewards.Add(upgradeInfo);
                 }
             }
 
