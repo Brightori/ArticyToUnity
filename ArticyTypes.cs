@@ -40,6 +40,7 @@ public class ArticyNightSettings
 public class ArticyConversation
 {
     public string ConversationId;
+    public bool HideComixAfterComplete = true;
     public List<long> StartDialogs = new List<long>();
     public List<ArticyEmotion> DialogsEmotions = new List<ArticyEmotion>(32);
     public List<ArticyDialogStep> Dialogs = new List<ArticyDialogStep>(32);
@@ -99,6 +100,9 @@ public class ArticyDialogStep
 
     public string Text;
     public int Orientation;
+
+    //сюда кладётся информация для квест аноунсера
+    public ArticyQuestLink ArticyQuestLink; 
 
     // эмоции это всё что связано с отображением UI 2д персонажа в текущий диалоговый шаг, тобишь просто картинка текущего персонажа
     // они из артиси переносятся в юнити c именем файла состоящим из имени главперсонажа + уникальный айди эмоции. 
@@ -172,6 +176,14 @@ public class ArticyQuest
     public List<string> NextQuests = new List<string>(4);
 }
 
+// это просто общая инфа для аноунсера, берется из прокинутого в диалог квеста
+public class ArticyQuestLink 
+{
+    public string Id;
+    public string DisplayId;
+    public long LongId;
+    public string IconFileName;
+}
 
 public abstract class Item
 {
@@ -242,4 +254,6 @@ public class ValuesHelper
     public const string NightSettingsAffectBuildings = "NightSettings.AffectBuildings";
     public const string NightSettingsToColor = "NightSettings.ToColor";
     public const string NightSettingsFromColor = "NightSettings.FromColor";
+    public const string HideComixAfterComplete = "HideComixAfterComplete.HideComixAfterComplete";
+    public const string QuestAnnouncer = "QuestAnonser.QuestsToAnonse";
 }

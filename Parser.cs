@@ -27,9 +27,13 @@ namespace MyCompany.TestArticy
 
         public void ProcessDialogues(ObjectProxy child)
         {
+
             var conversation = new ArticyConversation();
 
             conversation.ConversationId = "0x" + ((long)child.Id).ToString("X16");
+
+            if (child.HasProperty(ValuesHelper.HideComixAfterComplete))
+                conversation.HideComixAfterComplete = (bool)child[ValuesHelper.HideComixAfterComplete];
             conversations.Add(conversation);
 
             var childs = child.GetChildren();
@@ -204,8 +208,6 @@ namespace MyCompany.TestArticy
                     neededQuest.PreviousQuests.Add(q.Id);
                 }
             }
-
-            int tttt = 0;
         }
 
         private ObjectProxy CalculateTargetQuests(ObjectProxy startPoint, List<ObjectProxy> rows, List<ObjectProxy> additionalList)
@@ -369,6 +371,19 @@ namespace MyCompany.TestArticy
                     dialogue.Emotion.EmotionId = (long)((speaker as ObjectProxy)[ValuesHelper.PreviewImageAsset] as ObjectProxy).Id;
                     dialogue.Emotion.EmotionFileName = (string)((speaker as ObjectProxy)[ValuesHelper.PreviewImageAsset] as ObjectProxy)["Filename"];
                 }
+            }
+
+            var listOfQuests = objectProxy[ValuesHelper.QuestAnnouncer] as List<ObjectProxy>;
+
+            if (listOfQuests != null && listOfQuests.Count > 0)
+            {
+                var neededQuest = listOfQuests.FirstOrDefault();
+
+                dialogue.ArticyQuestLink = new ArticyQuestLink();
+                dialogue.ArticyQuestLink.DisplayId = neededQuest.GetDisplayName();
+                dialogue.ArticyQuestLink.Id = ConvertLongIdToStringId((long)neededQuest.Id);
+                dialogue.ArticyQuestLink.LongId = (long)neededQuest.Id;
+                dialogue.ArticyQuestLink.IconFileName = (string)(neededQuest[ObjectPropertyNames.PreviewImageAsset] as ObjectProxy)[ObjectPropertyNames.Filename];
             }
 
             dialogue.ArticyAnimation = GetArticyAnimation(objectProxy);

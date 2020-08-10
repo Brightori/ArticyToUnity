@@ -22,3 +22,12 @@ C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompan
 C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\App.config
 C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\Properties\Settings.Designer.cs
 C:\Users\fusio\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\Properties\Settings.settings
+D:\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\PluginManifest.xml
+D:\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\Resources\Icon.png
+D:\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\PluginTexts.tpk
+D:\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\Properties\Settings.Designer.cs
+D:\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\App.config
+D:\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\Properties\Settings.settings
+D:\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\MyCompany.TestArticy.dll.config
+D:\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\MyCompany.TestArticy.dll
+D:\AppData\Roaming\Articy Software\articy\3.x\Plugins\Local\MyCompany.TestArticy\1.0\AnyCPU\MyCompany.TestArticy.pdb
