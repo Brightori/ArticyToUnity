@@ -20,8 +20,8 @@ namespace MyCompany.TestArticy
         public const string AnswersJsonName = "\\answers.json";
         public const string AssetsPathForEmotions = "\\Assets\\ResourcesRaw\\Characters\\Emotions\\";
         public const string AssetsPathForEmoji = "\\Assets\\ResourcesRaw\\Characters\\Emoji\\";
-        public const string QuestTextJsomName = "\\quest.json";
-        public const string TriggersTextJsomName = "\\testTriggers.json";
+        public const string QuestTextJsonName = "\\quest.json";
+        public const string TriggersTextJsonName = "\\testTriggers.json";
 
         private Dictionary<int, string> ResourcesKeys = new Dictionary<int, string>()
         {
@@ -128,9 +128,9 @@ namespace MyCompany.TestArticy
                     File.WriteAllText(dataViewDir.FullName + CharactersJsonName, characters);
                     File.WriteAllText(dataViewDir.FullName + AnswersJsonName, answers);
                     File.WriteAllText(dataViewDir.FullName + BubbleTextsJsonName, bubbleTextsToJson);
-                    File.WriteAllText(dataGameDir.FullName + QuestTextJsomName, questTextToJson);
-                    File.WriteAllText(dataViewDir.FullName + TriggersTextJsomName, triggersViewTextToJson);
-                    File.WriteAllText(dataGameDir.FullName + TriggersTextJsomName, tiggersTextToJson);
+                    File.WriteAllText(dataGameDir.FullName + QuestTextJsonName, questTextToJson);
+                    File.WriteAllText(dataViewDir.FullName + TriggersTextJsonName, triggersViewTextToJson);
+                    File.WriteAllText(dataGameDir.FullName + TriggersTextJsonName, tiggersTextToJson);
                     //копируем ассеты эмоций
                     CopyAssetsToUnity();
                 }
@@ -171,11 +171,11 @@ namespace MyCompany.TestArticy
         }
 
 
-        private Dictionary<string, TriggerDescription> TriggersAdapter()
+        private Dictionary<string, object> TriggersAdapter()
         {
-            Dictionary<string, TriggerDescription> conversationFacade = new Dictionary<string, TriggerDescription>(64);
+            Dictionary<string, object> conversationFacade = new Dictionary<string, object>(64);
             foreach (var e in parser.ArticyQuests)
-                conversationFacade.Add(e.Id, parser.ConvertArticyQuestToTriggerDescription(e));
+                conversationFacade.Add(e.Id, new QuestAdapter(e));
 
             return conversationFacade;
         }
@@ -188,7 +188,6 @@ namespace MyCompany.TestArticy
 
             return conversationFacade;
         }
-
 
         private Dictionary<string, ArticyBubbleText> BubbleTextsAdapter()
         {

@@ -97,18 +97,6 @@ namespace MyCompany.TestArticy
             }
         }
 
-        public TriggerDescription ConvertArticyQuestToTriggerDescription(ArticyQuest quest)
-        {
-            var result = new TriggerDescription();
-
-            result.AcceptedReward = quest.acceptedRewards;
-            result.CompletePrice = quest.Cost;
-            result.Reward = quest.rewards;
-            result.DisplayId = quest.DisplayId;
-            
-            return result;
-        }
-
         public TriggerViewDescription ConvertArticyQuestToTriggerViewDescription(ArticyQuest quest)
         {
             var result = new TriggerViewDescription();
@@ -150,7 +138,7 @@ namespace MyCompany.TestArticy
                     {
                         string resourceType = ((int)go[ValuesHelper.SimpleRewardResourceType]).ToString();
                         int resourceamount = (int)(double)go[ValuesHelper.SimpleRewardAmount];
-                        quest.acceptedRewards.Add(new SimpleReward { Type = resourceType, Amount = resourceamount });
+                        quest.AcceptedRewards.Add(new SimpleReward { Type = resourceType, Amount = resourceamount });
                     }
                     else if (name == ValuesHelper.NightSettings)
                     {
@@ -163,7 +151,7 @@ namespace MyCompany.TestArticy
                         nightSettings.ToColor = (string)go[ValuesHelper.NightSettingsToColor];
                         nightSettings.FromColor = (string)go[ValuesHelper.NightSettingsFromColor];
 
-                        quest.rewards.Add(nightSettings);
+                        quest.Rewards.Add(nightSettings);
                     }
                 }
             }
@@ -180,7 +168,7 @@ namespace MyCompany.TestArticy
                     upgradeInfo.ExternalId = upgrade.GetExternalId();
                     upgradeInfo.FileInfo = (string)upgrade[ObjectPropertyNames.Filename];
 
-                    quest.rewards.Add(upgradeInfo);
+                    quest.Rewards.Add(upgradeInfo);
                 }
             }
 
@@ -384,11 +372,17 @@ namespace MyCompany.TestArticy
 
         private void ProccessDialogueFragment(ObjectProxy objectProxy, ArticyConversation conversation)
         {
+            var templateName = objectProxy.GetTemplateTechnicalName();
+            
+            //исключаем из диалогов BubbleText, он сюда попадает из за того что тексты для баблов стали перекидывать внутрь диалогов.
+            if (templateName == "BubbleText")
+                return;
+
             var dialogue = new ArticyDialogStep();
             conversation.Dialogs.Add(dialogue);
 
             var displayName = StringFixed(objectProxy.GetDisplayName());
-            var templateName = objectProxy.GetTemplateTechnicalName();
+            
 
             var objectId = objectProxy.Id;
 

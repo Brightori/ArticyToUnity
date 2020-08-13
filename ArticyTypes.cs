@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public interface IPrice
+public interface IMoney : IReward
 {
-    string Type { get; }
     int Amount { get; }
-
 }
 
 public interface IRequirement
@@ -185,17 +183,6 @@ public class SimpleReward : IReward
 }
 
 [Serializable]
-public class TriggerDescription
-{
-    public bool StartComix { get; set; }
-    public string DisplayId { get; set; }
-    public bool Acceptable { get; } = true;
-    public IPrice CompletePrice { get; set; }
-    public List<IReward> Reward { get; set; }
-    public List<IReward> AcceptedReward { get; set; }
-}
-
-[Serializable]
 public class TriggerViewDescription
 {
     public string Image { get; set; }
@@ -203,7 +190,6 @@ public class TriggerViewDescription
     public string Title { get; set; }
     public string ActivateComix { get; set; }
 }
-
 
 [Serializable]
 public class ArticyQuest
@@ -214,9 +200,9 @@ public class ArticyQuest
     public string IconFileName;
     public bool startComix;
 
-    public IPrice Cost;
-    public List<IReward> rewards = new List<IReward>(4);
-    public List<IReward> acceptedRewards = new List<IReward>(4);
+    public IMoney Cost;
+    public List<IReward> Rewards = new List<IReward>(4);
+    public List<IReward> AcceptedRewards = new List<IReward>(4);
 
     public List<string> PreviousQuests = new List<string>(4);
     public List<string> NextQuests = new List<string>(4);
@@ -232,11 +218,11 @@ public class ArticyQuestLink
 }
 
 [Serializable]
-public class Сurrency : IPrice
+public class Сurrency : IMoney
 {
-    public string Type { get; set; }
-
     public int Amount { get; set; }
+
+    public string Type { get; set; }
 }
 
 [Serializable]

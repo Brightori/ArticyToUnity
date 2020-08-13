@@ -77,6 +77,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdaptersForJson.cs" />
     <Compile Include="ExportManager.cs" />
     <Compile Include="ArticyTypes.cs" />
     <Compile Include="Parser.cs" />
