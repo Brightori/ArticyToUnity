@@ -1,4 +1,5 @@
 ﻿using Articy.Api;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,6 +11,7 @@ namespace MyCompany.TestArticy
         private List<ArticyEntity> entities = new List<ArticyEntity>(64);
         private List<ArticyAnswer> articyAnswers = new List<ArticyAnswer>(64);
         private List<ArticyBubbleText> articyBubbleTexts = new List<ArticyBubbleText>(256);
+        private List<ArticyFadeText> screenFaderTexts = new List<ArticyFadeText>(256);
         private List<ArticyQuest> articyQuests = new List<ArticyQuest>(64);
         private ApiSession apiSession;
 
@@ -17,6 +19,7 @@ namespace MyCompany.TestArticy
         public ArticyEntity[] Entities => entities.ToArray();
         public ArticyAnswer[] ArticyAnswers => articyAnswers.ToArray();
         public ArticyBubbleText[] ArticyBubbleTexts => articyBubbleTexts.ToArray();
+        public ArticyFadeText[] ScreenFaderTexts => screenFaderTexts.ToArray();
         public ArticyQuest[] ArticyQuests => articyQuests.ToArray();
 
         public Parser(ApiSession apiSession)
@@ -282,6 +285,21 @@ namespace MyCompany.TestArticy
             articyBubbleTexts.Add(bubbleText);
         }
 
+        public void ProcessScreenFaderText(ObjectProxy bd)
+        {
+            if (bd.HasProperty(ObjectPropertyNames.Text))
+            {
+                if (bd.GetText() == string.Empty)
+                    return;
+            }
+
+            var bubbleText = new ArticyFadeText();
+            bubbleText.Id = "0x" + ((long)bd.Id).ToString("X16");
+            bubbleText.Text = StringFixed(bd.GetText());
+            screenFaderTexts.Add(bubbleText);
+        }
+
+
         public void ProcessPlayerChoices(ObjectProxy pc)
         {
             var answer = new ArticyAnswer();
@@ -375,7 +393,7 @@ namespace MyCompany.TestArticy
             var templateName = objectProxy.GetTemplateTechnicalName();
             
             //исключаем из диалогов BubbleText, он сюда попадает из за того что тексты для баблов стали перекидывать внутрь диалогов.
-            if (templateName == "BubbleText")
+            if (templateName == "BubbleText" || templateName == "ScreenFader")
                 return;
 
             var dialogue = new ArticyDialogStep();
@@ -399,17 +417,17 @@ namespace MyCompany.TestArticy
                 }
             }
 
-            var listOfQuests = objectProxy[ValuesHelper.QuestAnnouncer] as List<ObjectProxy>;
-
-            if (listOfQuests != null && listOfQuests.Count > 0)
+            if (objectProxy.HasProperty(ValuesHelper.QuestAnnouncerUseAnnouncer))
             {
-                var neededQuest = listOfQuests.FirstOrDefault();
+                var useQuest = (bool)objectProxy[ValuesHelper.QuestAnnouncerUseAnnouncer];
 
-                dialogue.ArticyQuestLink = new ArticyQuestLink();
-                dialogue.ArticyQuestLink.DisplayId = neededQuest.GetDisplayName();
-                dialogue.ArticyQuestLink.Id = ConvertLongIdToStringId((long)neededQuest.Id);
-                dialogue.ArticyQuestLink.LongId = (long)neededQuest.Id;
-                dialogue.ArticyQuestLink.IconFileName = (string)(neededQuest[ObjectPropertyNames.PreviewImageAsset] as ObjectProxy)[ObjectPropertyNames.Filename];
+                if (useQuest)
+                {
+                    dialogue.ArticyQuestLink = new ArticyQuestLink();
+                    dialogue.ArticyQuestLink.Delay = (float)(double)objectProxy[ValuesHelper.QuestAnnouncerDelay];
+                    dialogue.ArticyQuestLink.Duration = (float)(double)objectProxy[ValuesHelper.QuestAnnouncerDuration]; ;
+                    dialogue.ArticyQuestLink.QuestId = ((int)(double)objectProxy[ValuesHelper.QuestAnnouncerId]).ToString();
+                }
             }
 
             dialogue.ArticyAnimation = GetArticyAnimation(objectProxy);

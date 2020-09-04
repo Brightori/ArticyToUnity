@@ -135,6 +135,21 @@ namespace MyCompany.TestArticy
         }
     }
 
+    public class GiftReward : CompositeReward
+    {
+        public override string type { get; set; } = "gift";
+        
+        public GiftReward()
+        {
+        }
+
+        public GiftReward(List<IReward> rewards)
+        {
+            foreach (var r in rewards)
+                this.rewards.Add(RewardFactory.GetReward(r));
+        }
+    }
+
     public class NightReward : Data
     {
         public bool night = false;

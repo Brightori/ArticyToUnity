@@ -174,6 +174,15 @@ public class ArticyBubbleText
     public ArticyAnimation3dControl ArticyAnimation = new ArticyAnimation3dControl();
 }
 
+
+[Serializable]
+public class ArticyFadeText
+{
+    public string Id;
+    public string Text;
+}
+
+
 [Serializable]
 public class SimpleReward : IReward
 {
@@ -211,10 +220,9 @@ public class ArticyQuest
 // это просто общая инфа для аноунсера, берется из прокинутого в диалог квеста
 public class ArticyQuestLink 
 {
-    public string Id;
-    public string DisplayId;
-    public long LongId;
-    public string IconFileName;
+    public string QuestId;
+    public float Duration;
+    public float Delay;
 }
 
 [Serializable]
@@ -242,6 +250,7 @@ public enum ArticyComicsEffectType
     Emotion2d = 1,
     Emoji3d = 2,
     DreamBubble2d = 3,
+    Anoncer2D = 4,
 }
 
 public enum DialogStepType
@@ -280,5 +289,9 @@ public class ValuesHelper
     public const string NightSettingsToColor = "NightSettings.ToColor";
     public const string NightSettingsFromColor = "NightSettings.FromColor";
     public const string HideComixAfterComplete = "HideComixAfterComplete.HideComixAfterComplete";
-    public const string QuestAnnouncer = "QuestAnonser.QuestsToAnonse";
+    public const string QuestAnnouncer = "QuestAnonserActual.QuestId";
+    public const string QuestAnnouncerId = "QuestAnonserActual.QuestId";
+    public const string QuestAnnouncerDelay = "QuestAnonserActual.Delay";
+    public const string QuestAnnouncerDuration = "QuestAnonserActual.Duration";
+    public const string QuestAnnouncerUseAnnouncer= "QuestAnonserActual.UseAnonser";
 }

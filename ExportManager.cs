@@ -17,11 +17,12 @@ namespace MyCompany.TestArticy
         public const string ConversationsJsonName = "\\conversations.json";
         public const string CharactersJsonName = "\\characters.json";
         public const string BubbleTextsJsonName = "\\bubbleTexts.json";
+        public const string FadeTextsJsonName = "\\fadeTexts.json";
         public const string AnswersJsonName = "\\answers.json";
         public const string AssetsPathForEmotions = "\\Assets\\ResourcesRaw\\Characters\\Emotions\\";
         public const string AssetsPathForEmoji = "\\Assets\\ResourcesRaw\\Characters\\Emoji\\";
-        public const string QuestTextJsonName = "\\quest.json";
-        public const string TriggersTextJsonName = "\\testTriggers.json";
+        //public const string QuestTextJsonName = "\\quest.json";
+        //public const string TriggersTextJsonName = "\\testTriggers.json";
 
         private Dictionary<int, string> ResourcesKeys = new Dictionary<int, string>()
         {
@@ -86,6 +87,9 @@ namespace MyCompany.TestArticy
                 //удивительно, но тут мы собираем квесты
                 var quests = mSession.RunQuery("SELECT * FROM Flow WHERE TemplateName = 'StandartQuest'");
 
+                //тут собираем все тексты для затемнения
+                var screenFaderTexts = mSession.RunQuery("SELECT * FROM Flow WHERE TemplateName = 'ScreenFader'");
+
                 //обработка диалогов
                 foreach (var r in flow.Rows)
                     parser.ProcessDialogues(r);
@@ -112,25 +116,31 @@ namespace MyCompany.TestArticy
                 foreach (var bd in bubbleTexts.Rows)
                     parser.ProcessBubbleTexts(bd);
 
+                //обрабатываем тексты для фейда
+                foreach (var sft in screenFaderTexts.Rows)
+                    parser.ProcessScreenFaderText(sft);
+
+
                 //сериализуем и закидываем в юнити
                 {
                     string conversations = JsonConvert.SerializeObject(ConversationAdapter());
                     string characters = JsonConvert.SerializeObject(CharactersAdapter());
                     string answers = JsonConvert.SerializeObject(AnswersAdapter());
                     string bubbleTextsToJson = JsonConvert.SerializeObject(BubbleTextsAdapter());
-                    string questTextToJson = JsonConvert.SerializeObject(QuestAdapter());
-
-                    string tiggersTextToJson = JsonConvert.SerializeObject(TriggersAdapter());
-                    string triggersViewTextToJson = JsonConvert.SerializeObject(TriggersViewAdapter());
+                    string screenFaderTextsToJson = JsonConvert.SerializeObject(FadeTextsAdapter());
+                    //string questTextToJson = JsonConvert.SerializeObject(QuestAdapter());
+                    //string tiggersTextToJson = JsonConvert.SerializeObject(TriggersAdapter());
+                    //string triggersViewTextToJson = JsonConvert.SerializeObject(TriggersViewAdapter());
 
 
                     File.WriteAllText(dataViewDir.FullName + ConversationsJsonName, conversations);
                     File.WriteAllText(dataViewDir.FullName + CharactersJsonName, characters);
                     File.WriteAllText(dataViewDir.FullName + AnswersJsonName, answers);
                     File.WriteAllText(dataViewDir.FullName + BubbleTextsJsonName, bubbleTextsToJson);
-                    File.WriteAllText(dataGameDir.FullName + QuestTextJsonName, questTextToJson);
-                    File.WriteAllText(dataViewDir.FullName + TriggersTextJsonName, triggersViewTextToJson);
-                    File.WriteAllText(dataGameDir.FullName + TriggersTextJsonName, tiggersTextToJson);
+                    File.WriteAllText(dataViewDir.FullName + FadeTextsJsonName, screenFaderTextsToJson);
+                    //File.WriteAllText(dataGameDir.FullName + QuestTextJsonName, questTextToJson);
+                    //File.WriteAllText(dataViewDir.FullName + TriggersTextJsonName, triggersViewTextToJson);
+                    //File.WriteAllText(dataGameDir.FullName + TriggersTextJsonName, tiggersTextToJson);
                     //копируем ассеты эмоций
                     CopyAssetsToUnity();
                 }
@@ -197,6 +207,16 @@ namespace MyCompany.TestArticy
 
             return conversationFacade;
         }
+
+        private Dictionary<string, ArticyFadeText> FadeTextsAdapter()
+        {
+            Dictionary<string, ArticyFadeText> conversationFacade = new Dictionary<string, ArticyFadeText>(256);
+            foreach (var e in parser.ScreenFaderTexts)
+                conversationFacade.Add(e.Id, e);
+
+            return conversationFacade;
+        }
+
 
         private Dictionary<string, ArticyAnswer> AnswersAdapter()
         {
