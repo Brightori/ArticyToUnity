@@ -12,7 +12,9 @@ namespace MyCompany.TestArticy
         private List<ArticyAnswer> articyAnswers = new List<ArticyAnswer>(64);
         private List<ArticyBubbleText> articyBubbleTexts = new List<ArticyBubbleText>(256);
         private List<ArticyFadeText> screenFaderTexts = new List<ArticyFadeText>(256);
+        private List<ArticyNotificationText> notificationTexts = new List<ArticyNotificationText>(256);
         private List<ArticyQuest> articyQuests = new List<ArticyQuest>(64);
+        private List<ArticyTextureOffset> articyTextureOffsets = new List<ArticyTextureOffset>(64);
         private ApiSession apiSession;
 
         public ArticyConversation[] Conversations => conversations.ToArray();
@@ -20,7 +22,9 @@ namespace MyCompany.TestArticy
         public ArticyAnswer[] ArticyAnswers => articyAnswers.ToArray();
         public ArticyBubbleText[] ArticyBubbleTexts => articyBubbleTexts.ToArray();
         public ArticyFadeText[] ScreenFaderTexts => screenFaderTexts.ToArray();
+        public ArticyNotificationText[] NotificationTexts => notificationTexts.ToArray();
         public ArticyQuest[] ArticyQuests => articyQuests.ToArray();
+        public ArticyTextureOffset[] ArticyTextureOffsets => articyTextureOffsets.ToArray();
 
         public Parser(ApiSession apiSession)
         {
@@ -299,6 +303,20 @@ namespace MyCompany.TestArticy
             screenFaderTexts.Add(bubbleText);
         }
 
+        public void ProcessNotificationText(ObjectProxy bd)
+        {
+            if (bd.HasProperty(ObjectPropertyNames.Text))
+            {
+                if (bd.GetText() == string.Empty)
+                    return;
+            }
+
+            var notificationText = new ArticyNotificationText();
+            notificationText.Id = "0x" + ((long)bd.Id).ToString("X16");
+            notificationText.Text = StringFixed(bd.GetText());
+            notificationTexts.Add(notificationText);
+        }
+
 
         public void ProcessPlayerChoices(ObjectProxy pc)
         {
@@ -423,10 +441,16 @@ namespace MyCompany.TestArticy
 
                 if (useQuest)
                 {
+
+                    //resultString = Regex.Match(subjectString, @"\d+").Value;
+
+                    //string result = Regex.Replace(input, @"[^\d]", "");
+                    //Console.WriteLine(result);
+
                     dialogue.ArticyQuestLink = new ArticyQuestLink();
                     dialogue.ArticyQuestLink.Delay = (float)(double)objectProxy[ValuesHelper.QuestAnnouncerDelay];
                     dialogue.ArticyQuestLink.Duration = (float)(double)objectProxy[ValuesHelper.QuestAnnouncerDuration]; ;
-                    dialogue.ArticyQuestLink.QuestId = ((int)(double)objectProxy[ValuesHelper.QuestAnnouncerId]).ToString();
+                    dialogue.ArticyQuestLink.QuestIds = ParseQuestIds((string)objectProxy[ValuesHelper.QuestAnnouncerId]);
                 }
             }
 
@@ -482,6 +506,13 @@ namespace MyCompany.TestArticy
             }
         }
 
+        private string[] ParseQuestIds(string ids)
+        {
+            ids = ids.Replace(" ", "");
+            return ids.Split(',');
+        }
+
+
         private string StringFixed(string id) => id.Replace("\"", "'");
 
 
@@ -533,6 +564,21 @@ namespace MyCompany.TestArticy
                 emotion.ParentEntityExternalId = entity.ExternalId;
                 emotion.ParentEntityDisplayId = entity.DisplayId;
                 entity.Emotions.Add(emotion);
+
+
+                var offset = new ArticyTextureOffset();
+                var id = emotion.EmotionName + emotion.EmotionId;
+
+                offset.Id = id;
+                offset.DreamBubbleOffset[0] = (int)(double)e[ValuesHelper.DreamBubbleOffsetX];
+                offset.DreamBubbleOffset[1] = (int)(double)e[ValuesHelper.DreamBubbleOffsetY];
+                offset.AccentBubbleOffset[0] = (int)(double)e[ValuesHelper.EmojiOffsetX];
+                offset.AccentBubbleOffset[1] = (int)(double)e[ValuesHelper.EmojiOffsetY];
+
+                if (!articyTextureOffsets.Any(articyTextureOffsets => articyTextureOffsets.Id == id))
+                {
+                    articyTextureOffsets.Add(offset);
+                }
             }
 
             var emotionsInDialogues = conversations.SelectMany(x => x.Dialogs).Select(z => z.Emotion);

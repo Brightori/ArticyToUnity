@@ -16,13 +16,15 @@ namespace MyCompany.TestArticy
         public const string SettingsJsonName = "\\settings.json";
         public const string ConversationsJsonName = "\\conversations.json";
         public const string CharactersJsonName = "\\characters.json";
-        public const string BubbleTextsJsonName = "\\bubbleTexts.json";
-        public const string FadeTextsJsonName = "\\fadeTexts.json";
+        public const string BubbleTextsJsonName = "\\bubble-texts.json";
+        public const string NotificationTextsJsonName = "\\notification-texts.json";
+        public const string FadeTextsJsonName = "\\fade-texts.json";
         public const string AnswersJsonName = "\\answers.json";
+        public const string TexturesOffsetJsonName = "\\textures-offset.json";
+
         public const string AssetsPathForEmotions = "\\Assets\\ResourcesRaw\\Characters\\Emotions\\";
         public const string AssetsPathForEmoji = "\\Assets\\ResourcesRaw\\Characters\\Emoji\\";
-        //public const string QuestTextJsonName = "\\quest.json";
-        //public const string TriggersTextJsonName = "\\testTriggers.json";
+
 
         private Dictionary<int, string> ResourcesKeys = new Dictionary<int, string>()
         {
@@ -90,6 +92,9 @@ namespace MyCompany.TestArticy
                 //тут собираем все тексты для затемнения
                 var screenFaderTexts = mSession.RunQuery("SELECT * FROM Flow WHERE TemplateName = 'ScreenFader'");
 
+                //тут собираем все тексты для затемнения
+                var notificationTexts = mSession.RunQuery("SELECT * FROM Flow WHERE TemplateName = 'NotificationText'");
+
                 //обработка диалогов
                 foreach (var r in flow.Rows)
                     parser.ProcessDialogues(r);
@@ -120,6 +125,9 @@ namespace MyCompany.TestArticy
                 foreach (var sft in screenFaderTexts.Rows)
                     parser.ProcessScreenFaderText(sft);
 
+                //обрабатываем тексты для нотификаций
+                foreach (var nt in notificationTexts.Rows)
+                    parser.ProcessNotificationText(nt);
 
                 //сериализуем и закидываем в юнити
                 {
@@ -128,19 +136,17 @@ namespace MyCompany.TestArticy
                     string answers = JsonConvert.SerializeObject(AnswersAdapter());
                     string bubbleTextsToJson = JsonConvert.SerializeObject(BubbleTextsAdapter());
                     string screenFaderTextsToJson = JsonConvert.SerializeObject(FadeTextsAdapter());
-                    //string questTextToJson = JsonConvert.SerializeObject(QuestAdapter());
-                    //string tiggersTextToJson = JsonConvert.SerializeObject(TriggersAdapter());
-                    //string triggersViewTextToJson = JsonConvert.SerializeObject(TriggersViewAdapter());
-
+                    string notificationTextsToJson = JsonConvert.SerializeObject(NotificationTextsAdapter());
+                    string textureOffsetsToJson = JsonConvert.SerializeObject(TextureOffsetsAdapter());
 
                     File.WriteAllText(dataViewDir.FullName + ConversationsJsonName, conversations);
                     File.WriteAllText(dataViewDir.FullName + CharactersJsonName, characters);
                     File.WriteAllText(dataViewDir.FullName + AnswersJsonName, answers);
                     File.WriteAllText(dataViewDir.FullName + BubbleTextsJsonName, bubbleTextsToJson);
                     File.WriteAllText(dataViewDir.FullName + FadeTextsJsonName, screenFaderTextsToJson);
-                    //File.WriteAllText(dataGameDir.FullName + QuestTextJsonName, questTextToJson);
-                    //File.WriteAllText(dataViewDir.FullName + TriggersTextJsonName, triggersViewTextToJson);
-                    //File.WriteAllText(dataGameDir.FullName + TriggersTextJsonName, tiggersTextToJson);
+                    File.WriteAllText(dataViewDir.FullName + NotificationTextsJsonName, notificationTextsToJson);
+                    File.WriteAllText(dataViewDir.FullName + TexturesOffsetJsonName, textureOffsetsToJson);
+
                     //копируем ассеты эмоций
                     CopyAssetsToUnity();
                 }
@@ -217,6 +223,23 @@ namespace MyCompany.TestArticy
             return conversationFacade;
         }
 
+        private Dictionary<string, ArticyNotificationText> NotificationTextsAdapter()
+        {
+            Dictionary<string, ArticyNotificationText> conversationFacade = new Dictionary<string, ArticyNotificationText>(256);
+            foreach (var e in parser.NotificationTexts)
+                conversationFacade.Add(e.Id, e);
+
+            return conversationFacade;
+        }
+
+        private Dictionary<string, ArticyTextureOffset> TextureOffsetsAdapter()
+        {
+            Dictionary<string, ArticyTextureOffset> conversationFacade = new Dictionary<string, ArticyTextureOffset>(256);
+            foreach (var e in parser.ArticyTextureOffsets)
+                conversationFacade.Add(e.Id, e);
+
+            return conversationFacade;
+        }
 
         private Dictionary<string, ArticyAnswer> AnswersAdapter()
         {

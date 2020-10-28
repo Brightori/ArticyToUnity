@@ -72,6 +72,15 @@ public class ArticyEntity
 }
 
 [Serializable]
+public class ArticyTextureOffset
+{
+    public string Id;
+    public int[] DreamBubbleOffset = new int[2];
+    public int[] AccentBubbleOffset = new int [2];
+}
+
+
+[Serializable]
 public class ArticyEmotion
 {
     public long ParentEntityId;
@@ -182,6 +191,11 @@ public class ArticyFadeText
     public string Text;
 }
 
+public class ArticyNotificationText
+{
+    public string Id;
+    public string Text;
+}
 
 [Serializable]
 public class SimpleReward : IReward
@@ -220,7 +234,7 @@ public class ArticyQuest
 // это просто общая инфа для аноунсера, берется из прокинутого в диалог квеста
 public class ArticyQuestLink 
 {
-    public string QuestId;
+    public string [] QuestIds;
     public float Duration;
     public float Delay;
 }
@@ -294,4 +308,8 @@ public class ValuesHelper
     public const string QuestAnnouncerDelay = "QuestAnonserActual.Delay";
     public const string QuestAnnouncerDuration = "QuestAnonserActual.Duration";
     public const string QuestAnnouncerUseAnnouncer= "QuestAnonserActual.UseAnonser";
+    public const string DreamBubbleOffsetX = "DreamBubble_offset.X";
+    public const string DreamBubbleOffsetY = "DreamBubble_offset.Y";
+    public const string EmojiOffsetX = "EmojiOffset.X";
+    public const string EmojiOffsetY = "EmojiOffset.Y";
 }
