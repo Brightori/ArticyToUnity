@@ -6,14 +6,10 @@ public interface IMoney : IReward
     int Amount { get; }
 }
 
-public interface IRequirement
-{
-    string Type { get; }
-}
-
 public interface IReward
 {
     string Type { get; }
+    string Path { get; }
 }
 
 [Serializable]
@@ -37,20 +33,6 @@ public class ArticyEntitiesData
         Entities = entities;
     }
 }
-
-[Serializable] //NightSettings
-public class ArticyNightSettings : IReward
-{
-    public string Type => "night";
-
-    public string FromColor;
-    public string ToColor;
-    public bool AffectBuildings;
-    public bool AffectCharacters;
-    public float Duration = 2f;
-    public bool DisableAfterCompletion;
-}
-
 
 [Serializable]
 public class ArticyConversation
@@ -76,7 +58,7 @@ public class ArticyTextureOffset
 {
     public string Id;
     public int[] DreamBubbleOffset = new int[2];
-    public int[] AccentBubbleOffset = new int [2];
+    public int[] AccentBubbleOffset = new int[2];
 }
 
 
@@ -127,7 +109,7 @@ public class ArticyDialogStep
     public int Orientation;
 
     //сюда кладётся информация для квест аноунсера
-    public ArticyQuestLink ArticyQuestLink; 
+    public ArticyAnnouncer ArticyQuestLink;
 
     // эмоции это всё что связано с отображением UI 2д персонажа в текущий диалоговый шаг, тобишь просто картинка текущего персонажа
     // они из артиси переносятся в юнити c именем файла состоящим из имени главперсонажа + уникальный айди эмоции. 
@@ -185,33 +167,54 @@ public class ArticyBubbleText
 
 
 [Serializable]
-public class ArticyFadeText
-{
-    public string Id;
-    public string Text;
-}
-
-public class ArticyNotificationText
+public class ArticyText
 {
     public string Id;
     public string Text;
 }
 
 [Serializable]
-public class SimpleReward : IReward
+public class SimpleReward : IMoney
 {
     public int Amount { get; set; }
 
     public string Type { get; set; }
+
+    public string Path { get; set; }
 }
 
 [Serializable]
-public class TriggerViewDescription
+public class ArticyGiftReward : IReward
 {
-    public string Image { get; set; }
-    public string Text { get; set; }
-    public string Title { get; set; }
-    public string ActivateComix { get; set; }
+    public string Path { get; set; }
+
+    public string Type { get; set; } = "deal";
+}
+
+[Serializable]
+public class ArticyQuestTriggerReward : IMoney
+{
+    public string Path { get; set; }
+
+    public string Type { get; set; }
+
+    public int Amount { get; set; }
+}
+
+[Serializable]
+public class ArticyQuestTriggerEnableReward : IReward
+{
+    public string Path { get; set; }
+
+    public string Type { get; set; }
+
+}
+
+[Serializable]
+public class ArticyQuestLink
+{
+    public string Id;
+    public long LongId;
 }
 
 [Serializable]
@@ -219,22 +222,25 @@ public class ArticyQuest
 {
     public string Id;
     public long LongId;
+    public string ViewId;
     public string DisplayId;
     public string IconFileName;
-    public bool startComix;
+    public bool AlwaysShowActivatedComix;
+    public bool OpenQuestList;
+    public bool Essential;
 
     public IMoney Cost;
     public List<IReward> Rewards = new List<IReward>(4);
     public List<IReward> AcceptedRewards = new List<IReward>(4);
 
-    public List<string> PreviousQuests = new List<string>(4);
-    public List<string> NextQuests = new List<string>(4);
+    public List<ArticyQuestLink> PreviousQuests = new List<ArticyQuestLink>(4);
+    public List<ArticyQuestLink> NextQuests = new List<ArticyQuestLink>(4);
 }
 
 // это просто общая инфа для аноунсера, берется из прокинутого в диалог квеста
-public class ArticyQuestLink 
+public class ArticyAnnouncer
 {
-    public string [] QuestIds;
+    public string[] QuestIds;
     public float Duration;
     public float Delay;
 }
@@ -245,18 +251,10 @@ public class Сurrency : IMoney
     public int Amount { get; set; }
 
     public string Type { get; set; }
+
+    public string Path { get; set; }
 }
 
-[Serializable]
-public class UpgradeBuildingInfo : IReward
-{
-    public long Id;
-    public string DisplayId;
-    public string ExternalId;
-    public string FileInfo;
-
-    public string Type { get; set; }
-}
 
 public enum ArticyComicsEffectType
 {
@@ -307,9 +305,14 @@ public class ValuesHelper
     public const string QuestAnnouncerId = "QuestAnonserActual.QuestId";
     public const string QuestAnnouncerDelay = "QuestAnonserActual.Delay";
     public const string QuestAnnouncerDuration = "QuestAnonserActual.Duration";
-    public const string QuestAnnouncerUseAnnouncer= "QuestAnonserActual.UseAnonser";
+    public const string QuestAnnouncerUseAnnouncer = "QuestAnonserActual.UseAnonser";
     public const string DreamBubbleOffsetX = "DreamBubble_offset.X";
     public const string DreamBubbleOffsetY = "DreamBubble_offset.Y";
     public const string EmojiOffsetX = "EmojiOffset.X";
     public const string EmojiOffsetY = "EmojiOffset.Y";
+    public const string ViewId = "QuestSettings.ActivateComix";
+    public const string OpenQuestList = "QuestSettings.OpenQuestList";
+    public const string AlwaysShowActivatedComix = "QuestSettings.AlwaysShowActivatedComix";
+    public const string Essential = "QuestSettings.Essential";
+    public const string GiftId = "Gift.id";
 }

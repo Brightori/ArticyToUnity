@@ -21,9 +21,11 @@ namespace MyCompany.TestArticy
         public const string FadeTextsJsonName = "\\fade-texts.json";
         public const string AnswersJsonName = "\\answers.json";
         public const string TexturesOffsetJsonName = "\\textures-offset.json";
+        public const string ArticyTriggersJsonName = "\\articy-triggers.json";
 
         public const string AssetsPathForEmotions = "\\Assets\\ResourcesRaw\\Characters\\Emotions\\";
         public const string AssetsPathForEmoji = "\\Assets\\ResourcesRaw\\Characters\\Emoji\\";
+        public const string AssetsPathForQuestIcon = "\\Assets\\ResourcesRaw\\Characters\\QuestIcon\\";
 
 
         private Dictionary<int, string> ResourcesKeys = new Dictionary<int, string>()
@@ -76,6 +78,7 @@ namespace MyCompany.TestArticy
                 //собираем все диалоги 
                 var flow = mSession.RunQuery("SELECT * FROM Flow WHERE ObjectType=Dialogue");
                 var connections = mSession.RunQuery("SELECT * FROM Flow WHERE ObjectType=Connection");
+
 
                 //собираем всех персонажей
                 var mainCharacters = mSession.RunQuery("SELECT * FROM Entities WHERE TemplateName= 'MainCharacters'");
@@ -138,6 +141,8 @@ namespace MyCompany.TestArticy
                     string screenFaderTextsToJson = JsonConvert.SerializeObject(FadeTextsAdapter());
                     string notificationTextsToJson = JsonConvert.SerializeObject(NotificationTextsAdapter());
                     string textureOffsetsToJson = JsonConvert.SerializeObject(TextureOffsetsAdapter());
+                    string testTriggerView = JsonConvert.SerializeObject(TriggersViewAdapter());
+                    string testTrigger = JsonConvert.SerializeObject(TriggersAdapter());
 
                     File.WriteAllText(dataViewDir.FullName + ConversationsJsonName, conversations);
                     File.WriteAllText(dataViewDir.FullName + CharactersJsonName, characters);
@@ -146,6 +151,8 @@ namespace MyCompany.TestArticy
                     File.WriteAllText(dataViewDir.FullName + FadeTextsJsonName, screenFaderTextsToJson);
                     File.WriteAllText(dataViewDir.FullName + NotificationTextsJsonName, notificationTextsToJson);
                     File.WriteAllText(dataViewDir.FullName + TexturesOffsetJsonName, textureOffsetsToJson);
+                    File.WriteAllText(dataViewDir.FullName + ArticyTriggersJsonName, testTriggerView);
+                    File.WriteAllText(dataGameDir.FullName + ArticyTriggersJsonName, testTrigger);
 
                     //копируем ассеты эмоций
                     CopyAssetsToUnity();
@@ -177,30 +184,20 @@ namespace MyCompany.TestArticy
             return conversationFacade;
         }
 
-        private Dictionary<string, ArticyQuest> QuestAdapter()
+        private Dictionary<string, TriggersAdapter> TriggersAdapter()
         {
-            Dictionary<string, ArticyQuest> conversationFacade = new Dictionary<string, ArticyQuest>(64);
+            Dictionary<string, TriggersAdapter> conversationFacade = new Dictionary<string, TriggersAdapter>(64);
             foreach (var e in parser.ArticyQuests)
-                conversationFacade.Add(e.Id, e);
+                conversationFacade.Add(e.Id, new TriggersAdapter(e));
 
             return conversationFacade;
         }
 
-
-        private Dictionary<string, object> TriggersAdapter()
+        private Dictionary<string, TriggersViewAdapter> TriggersViewAdapter()
         {
-            Dictionary<string, object> conversationFacade = new Dictionary<string, object>(64);
+            Dictionary<string, TriggersViewAdapter> conversationFacade = new Dictionary<string, TriggersViewAdapter>(64);
             foreach (var e in parser.ArticyQuests)
-                conversationFacade.Add(e.Id, new QuestAdapter(e));
-
-            return conversationFacade;
-        }
-
-        private Dictionary<string, TriggerViewDescription> TriggersViewAdapter()
-        {
-            Dictionary<string, TriggerViewDescription> conversationFacade = new Dictionary<string, TriggerViewDescription>(64);
-            foreach (var e in parser.ArticyQuests)
-                conversationFacade.Add(e.Id, parser.ConvertArticyQuestToTriggerViewDescription(e));
+                conversationFacade.Add(e.Id, new TriggersViewAdapter(e));
 
             return conversationFacade;
         }
@@ -214,18 +211,18 @@ namespace MyCompany.TestArticy
             return conversationFacade;
         }
 
-        private Dictionary<string, ArticyFadeText> FadeTextsAdapter()
+        private Dictionary<string, ArticyText> FadeTextsAdapter()
         {
-            Dictionary<string, ArticyFadeText> conversationFacade = new Dictionary<string, ArticyFadeText>(256);
+            Dictionary<string, ArticyText> conversationFacade = new Dictionary<string, ArticyText>(256);
             foreach (var e in parser.ScreenFaderTexts)
                 conversationFacade.Add(e.Id, e);
 
             return conversationFacade;
         }
 
-        private Dictionary<string, ArticyNotificationText> NotificationTextsAdapter()
+        private Dictionary<string, ArticyText> NotificationTextsAdapter()
         {
-            Dictionary<string, ArticyNotificationText> conversationFacade = new Dictionary<string, ArticyNotificationText>(256);
+            Dictionary<string, ArticyText> conversationFacade = new Dictionary<string, ArticyText>(256);
             foreach (var e in parser.NotificationTexts)
                 conversationFacade.Add(e.Id, e);
 
@@ -250,18 +247,6 @@ namespace MyCompany.TestArticy
             return conversationFacade;
         }
 
-        private Dictionary<string, object> ArticyDictionaryAdapter()
-        {
-            var dict = new Dictionary<string, object>(100);
-            var quests = parser.ArticyQuests;
-
-            foreach (var q in quests)
-            {
-
-            }
-
-            return default;
-        }
 
         private void CopyAssetsToUnity()
         {
@@ -269,6 +254,7 @@ namespace MyCompany.TestArticy
             var emoji = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'DreamBubble'");
             var emojiStandart = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'Emoji2d'");
             var bubblePicture = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'BubblePicture'");
+            var questIcon = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'QuestIcon'");
 
             if (emotionsFolder == null)
             {
@@ -314,6 +300,7 @@ namespace MyCompany.TestArticy
                 SaveEmoji(emoji.Rows);
                 SaveEmoji(emojiStandart.Rows);
                 SaveBubblePicture(bubblePicture.Rows);
+                SaveQuestrIcon(questIcon.Rows);
             }
         }
 
@@ -331,6 +318,23 @@ namespace MyCompany.TestArticy
                 SaveToPath(assetFile, AssetsPathForEmoji, ((long)e.Id).ToString());
             }
         }
+
+        private void SaveQuestrIcon(List<ObjectProxy> emojies)
+        {
+            foreach (var e in emojies)
+            {
+                var assetFullFilename = (string)e[ObjectPropertyNames.AbsoluteFilePath];
+                var assetFilename = (string)e[ObjectPropertyNames.Filename];
+                var assetFile = new FileInfo(assetFullFilename);
+                var assetFilenameWithoutExtention = Path.GetFileNameWithoutExtension(assetFilename);
+
+                if (!parser.ArticyQuests.Any(x => x.IconFileName == assetFilenameWithoutExtention))
+                    continue;
+
+                SaveToPath(assetFile, AssetsPathForQuestIcon, assetFilenameWithoutExtention);
+            }
+        }
+
 
         private void SaveEmoji(List<ObjectProxy> emojies)
         {

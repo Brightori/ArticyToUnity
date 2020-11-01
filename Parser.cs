@@ -1,7 +1,9 @@
 ﻿using Articy.Api;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace MyCompany.TestArticy
 {
@@ -11,8 +13,8 @@ namespace MyCompany.TestArticy
         private List<ArticyEntity> entities = new List<ArticyEntity>(64);
         private List<ArticyAnswer> articyAnswers = new List<ArticyAnswer>(64);
         private List<ArticyBubbleText> articyBubbleTexts = new List<ArticyBubbleText>(256);
-        private List<ArticyFadeText> screenFaderTexts = new List<ArticyFadeText>(256);
-        private List<ArticyNotificationText> notificationTexts = new List<ArticyNotificationText>(256);
+        private List<ArticyText> screenFaderTexts = new List<ArticyText>(256);
+        private List<ArticyText> notificationTexts = new List<ArticyText>(256);
         private List<ArticyQuest> articyQuests = new List<ArticyQuest>(64);
         private List<ArticyTextureOffset> articyTextureOffsets = new List<ArticyTextureOffset>(64);
         private ApiSession apiSession;
@@ -21,8 +23,8 @@ namespace MyCompany.TestArticy
         public ArticyEntity[] Entities => entities.ToArray();
         public ArticyAnswer[] ArticyAnswers => articyAnswers.ToArray();
         public ArticyBubbleText[] ArticyBubbleTexts => articyBubbleTexts.ToArray();
-        public ArticyFadeText[] ScreenFaderTexts => screenFaderTexts.ToArray();
-        public ArticyNotificationText[] NotificationTexts => notificationTexts.ToArray();
+        public ArticyText[] ScreenFaderTexts => screenFaderTexts.ToArray();
+        public ArticyText[] NotificationTexts => notificationTexts.ToArray();
         public ArticyQuest[] ArticyQuests => articyQuests.ToArray();
         public ArticyTextureOffset[] ArticyTextureOffsets => articyTextureOffsets.ToArray();
 
@@ -104,29 +106,43 @@ namespace MyCompany.TestArticy
             }
         }
 
-        public TriggerViewDescription ConvertArticyQuestToTriggerViewDescription(ArticyQuest quest)
+        public string ParseIdFromViewId(ObjectProxy proxy)
         {
-            var result = new TriggerViewDescription();
+            string GoalWithQuestRegexPatter = @"(\d{1,4}[_]\d{1,4})";
 
-            result.ActivateComix = quest.Id;
-            result.Text = quest.DisplayId;
-            result.Title = quest.DisplayId;
-            result.Image = quest.IconFileName;
+            var viewdId = (string)proxy[ValuesHelper.ViewId]; ;
 
-            return result;
+            Regex regex = new Regex(GoalWithQuestRegexPatter);
+            MatchCollection matches = regex.Matches(viewdId);
+
+            if (matches.Count > 0)
+            {
+                var questName = matches[0].Value;
+                return questName;
+            }
+            else
+            {
+                return "0x" + ((long)proxy.Id).ToString("X16");
+            }
         }
-
 
         public void ProcessQuests(ObjectProxy q)
         {
             var quest = new ArticyQuest();
 
-            quest.Id = "0x" + ((long)q.Id).ToString("X16");
             quest.LongId = (long)q.Id;
+            quest.ViewId = (string)q[ValuesHelper.ViewId];
+            quest.AlwaysShowActivatedComix = (bool)q[ValuesHelper.AlwaysShowActivatedComix];
+            quest.Essential = (bool)q[ValuesHelper.AlwaysShowActivatedComix];
+            quest.OpenQuestList = (bool)q[ValuesHelper.OpenQuestList];
+            quest.Id = ParseIdFromViewId(q);
             quest.DisplayId = q.GetDisplayName();
 
             if (q[ObjectPropertyNames.PreviewImageAsset] != null)
-                quest.IconFileName = (string)(q[ObjectPropertyNames.PreviewImageAsset] as ObjectProxy)[ObjectPropertyNames.Filename];
+            {
+                var filename = (string)(q[ObjectPropertyNames.PreviewImageAsset] as ObjectProxy)[ObjectPropertyNames.Filename];
+                quest.IconFileName = Path.GetFileNameWithoutExtension(filename);
+            }
 
             var questAttachments = q[ObjectPropertyNames.Attachments] as List<ObjectProxy>;
 
@@ -134,52 +150,49 @@ namespace MyCompany.TestArticy
             {
                 foreach (var go in questAttachments)
                 {
-                    var name = (string) go[ObjectPropertyNames.TemplateName];
+                    var name = (string)go[ObjectPropertyNames.TemplateName];
                     if (name == ValuesHelper.SimpleResource)
                     {
-                        string resourceType = ((int)go[ValuesHelper.SimpleResourceResourceType]).ToString();
+                        string resourceTypeString = ((int)go[ValuesHelper.SimpleResourceResourceType]).ToString();
                         int resourceamount = (int)(double)go[ValuesHelper.SimpleResourceAmount];
-                        quest.Cost = new Сurrency { Type = resourceType, Amount = resourceamount };
+
+                        switch (resourceTypeString)
+                        {
+                            case "1":
+                                quest.AcceptedRewards.Add(new ArticyQuestTriggerReward { Type = resourceTypeString, Amount = resourceamount });
+                                break;
+
+                            default:
+                                quest.Cost = new Сurrency { Type = resourceTypeString, Amount = resourceamount, Path = FactoryPath(resourceTypeString) };
+                                break;
+
+                        }
                     }
-                    else if (name == ValuesHelper.SimpleReward)
+                    else if (go.HasProperty(ValuesHelper.GiftId))
                     {
-                        string resourceType = ((int)go[ValuesHelper.SimpleRewardResourceType]).ToString();
-                        int resourceamount = (int)(double)go[ValuesHelper.SimpleRewardAmount];
-                        quest.AcceptedRewards.Add(new SimpleReward { Type = resourceType, Amount = resourceamount });
+                        var resourceamount = (string)go[ValuesHelper.GiftId];
+                        quest.Rewards.Add(new ArticyGiftReward { Path = resourceamount });
                     }
-                    else if (name == ValuesHelper.NightSettings)
-                    {
-                        var nightSettings = new ArticyNightSettings();
-
-                        nightSettings.Duration = (float)(double)go[ValuesHelper.NightSettingsDuration];
-                        nightSettings.DisableAfterCompletion = (bool)go[ValuesHelper.NightSettingsDisableNightAfterCompletion];
-                        nightSettings.AffectCharacters = (bool)go[ValuesHelper.NightSettingsAffectCharacters];
-                        nightSettings.AffectBuildings = (bool)go[ValuesHelper.NightSettingsAffectBuildings];
-                        nightSettings.ToColor = (string)go[ValuesHelper.NightSettingsToColor];
-                        nightSettings.FromColor = (string)go[ValuesHelper.NightSettingsFromColor];
-
-                        quest.Rewards.Add(nightSettings);
-                    }
-                }
-            }
-
-            if (q.HasProperty(ValuesHelper.BuildingToUpgrade))
-            {
-                var checkBuildingToUpgrade = q[ValuesHelper.BuildingToUpgrade];
-                if (checkBuildingToUpgrade != null)
-                {
-                    var upgrade = (checkBuildingToUpgrade as ObjectProxy);
-                    var upgradeInfo = new UpgradeBuildingInfo();
-                    upgradeInfo.DisplayId = upgrade.GetDisplayName();
-                    upgradeInfo.Id = (long)upgrade.Id;
-                    upgradeInfo.ExternalId = upgrade.GetExternalId();
-                    upgradeInfo.FileInfo = (string)upgrade[ObjectPropertyNames.Filename];
-
-                    quest.Rewards.Add(upgradeInfo);
                 }
             }
 
             articyQuests.Add(quest);
+
+            string FactoryPath(string type)
+            {
+                switch (type)
+                {
+                    case "0":
+                        return "money";
+
+                    case "1":
+                        return "complete-quest";
+
+                    case "2":
+                    default:
+                        return "premium";
+                }
+            }
         }
 
         internal void ProcessConnections(List<ObjectProxy> rows)
@@ -199,7 +212,6 @@ namespace MyCompany.TestArticy
                 //находим первые связи прикрепленные к квесту, идем по ним вниз
                 var startPoint = rows.Where(x => x[ObjectPropertyNames.Source] != null
                     && (long)((x[ObjectPropertyNames.Source] as ObjectProxy).Id) == q.LongId).ToList(); ;
-                var test = rows.FirstOrDefault(x => (string)(x[ObjectPropertyNames.Target] as ObjectProxy)[ObjectPropertyNames.TemplateName] == "StandartQuest");
 
                 if (startPoint != null)
                 {
@@ -213,12 +225,25 @@ namespace MyCompany.TestArticy
                         if (nextQuest != null || additionalList.Count > 0)
                         {
                             if (nextQuest != null)
-                                q.NextQuests.Add(ConvertLongIdToStringId((long)nextQuest.Id));
+                            {
+                                var id = ParseIdFromViewId(nextQuest);
+                                var londId = (long)nextQuest.Id;
+
+                                q.NextQuests.Add(new ArticyQuestLink { Id = id, LongId = londId });
+                                q.AcceptedRewards.Add(new ArticyQuestTriggerEnableReward { Path = id });
+                            }
 
                             foreach (var aq in additionalList)
                             {
                                 if (aq != null)
-                                    q.NextQuests.Add(ConvertLongIdToStringId((long)aq.Id));
+                                {
+                                    var id = ParseIdFromViewId(aq);
+                                    var londId = (long)aq.Id;
+
+                                    q.NextQuests.Add(new ArticyQuestLink { Id = id, LongId = londId });
+                                    q.AcceptedRewards.Add(new ArticyQuestTriggerEnableReward { Path = id });
+
+                                }
                             }
                         }
                     }
@@ -231,8 +256,8 @@ namespace MyCompany.TestArticy
             {
                 foreach (var nq in q.NextQuests)
                 {
-                    var neededQuest = articyQuests.FirstOrDefault(x => x.Id == nq);
-                    neededQuest.PreviousQuests.Add(q.Id);
+                    var neededQuest = articyQuests.FirstOrDefault(x => x.LongId == nq.LongId);
+                    neededQuest.PreviousQuests.Add(new ArticyQuestLink { Id = q.Id, LongId = q.LongId });
                 }
             }
         }
@@ -297,7 +322,7 @@ namespace MyCompany.TestArticy
                     return;
             }
 
-            var bubbleText = new ArticyFadeText();
+            var bubbleText = new ArticyText();
             bubbleText.Id = "0x" + ((long)bd.Id).ToString("X16");
             bubbleText.Text = StringFixed(bd.GetText());
             screenFaderTexts.Add(bubbleText);
@@ -311,7 +336,7 @@ namespace MyCompany.TestArticy
                     return;
             }
 
-            var notificationText = new ArticyNotificationText();
+            var notificationText = new ArticyText();
             notificationText.Id = "0x" + ((long)bd.Id).ToString("X16");
             notificationText.Text = StringFixed(bd.GetText());
             notificationTexts.Add(notificationText);
@@ -409,7 +434,7 @@ namespace MyCompany.TestArticy
         private void ProccessDialogueFragment(ObjectProxy objectProxy, ArticyConversation conversation)
         {
             var templateName = objectProxy.GetTemplateTechnicalName();
-            
+
             //исключаем из диалогов BubbleText, он сюда попадает из за того что тексты для баблов стали перекидывать внутрь диалогов.
             if (templateName == "BubbleText" || templateName == "ScreenFader")
                 return;
@@ -418,7 +443,7 @@ namespace MyCompany.TestArticy
             conversation.Dialogs.Add(dialogue);
 
             var displayName = StringFixed(objectProxy.GetDisplayName());
-            
+
 
             var objectId = objectProxy.Id;
 
@@ -441,13 +466,7 @@ namespace MyCompany.TestArticy
 
                 if (useQuest)
                 {
-
-                    //resultString = Regex.Match(subjectString, @"\d+").Value;
-
-                    //string result = Regex.Replace(input, @"[^\d]", "");
-                    //Console.WriteLine(result);
-
-                    dialogue.ArticyQuestLink = new ArticyQuestLink();
+                    dialogue.ArticyQuestLink = new ArticyAnnouncer();
                     dialogue.ArticyQuestLink.Delay = (float)(double)objectProxy[ValuesHelper.QuestAnnouncerDelay];
                     dialogue.ArticyQuestLink.Duration = (float)(double)objectProxy[ValuesHelper.QuestAnnouncerDuration]; ;
                     dialogue.ArticyQuestLink.QuestIds = ParseQuestIds((string)objectProxy[ValuesHelper.QuestAnnouncerId]);
@@ -512,9 +531,7 @@ namespace MyCompany.TestArticy
             return ids.Split(',');
         }
 
-
         private string StringFixed(string id) => id.Replace("\"", "'");
-
 
         private ArticyComicsEffect ArticyComicsEffect(ObjectProxy comicsEffect)
         {
