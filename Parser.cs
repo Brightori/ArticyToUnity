@@ -488,6 +488,20 @@ namespace MyCompany.TestArticy
                 }
             }
 
+            //тут обрабатываем 2д back для персонажей диалога
+            if (objectProxy.HasProperty(ValuesHelper.Background))
+            {
+                var background = objectProxy[ValuesHelper.Background];
+
+                if (background != null)
+                {
+                    dialogue.ArticyBackground = new ArticyBackground();
+                    dialogue.ArticyBackground.FileName = (string)((ObjectProxy)background)[ObjectPropertyNames.Filename];
+                    dialogue.ArticyComicsEffect.TimeOutComicsEffect = (int)objectProxy[ValuesHelper.BackgroundOrientation];
+                }
+            }
+
+
             //тут обрабатываем 2д баблы с эмоджи для 3д персонажей 
             if (objectProxy.HasProperty(ValuesHelper.BubblePicture))
             {

@@ -119,6 +119,8 @@ public class ArticyDialogStep
     //здесь всё что связано с 3д, за исключение баблов
     public ArticyAnimation3dControl ArticyAnimation = new ArticyAnimation3dControl();
 
+    public ArticyBackground ArticyBackground;
+
     //сюда мы берем данные с поля ComicsEffect  для 2д диалогов
     public ArticyComicsEffect ArticyComicsEffect;
 
@@ -132,6 +134,14 @@ public class ArticyDialogStep
     public List<long> NextStepsIds = new List<long>(4);
     public bool IsActive => DialogStepType == DialogStepType.ReplyText;
 }
+
+[Serializable]
+public class ArticyBackground
+{
+    public string FileName;
+    public int BackgroundOrientation;
+}
+
 
 [Serializable]
 public class ArticyComicsEffect
@@ -280,6 +290,8 @@ public class ValuesHelper
     public const string PreviewImageAsset = "PreviewImageAsset";
     public const string Speaker = "Speaker";
     public const string ComicsEffect = "ReplySettings.ComicsEffect";
+    public const string Background = "BackgroundSettings.Background";
+    public const string BackgroundOrientation = "BackgroundSettings.BackgroundOrient";
     public const string DreamBubble2d = "DreamBubble";
     public const string Emotion2D = "Emotion2D";
     public const string BubblePicture = "AnimationController3d.BubblePicture";

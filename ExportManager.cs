@@ -26,6 +26,7 @@ namespace MyCompany.TestArticy
         public const string AssetsPathForEmotions = "\\Assets\\ResourcesRaw\\Characters\\Emotions\\";
         public const string AssetsPathForEmoji = "\\Assets\\ResourcesRaw\\Characters\\Emoji\\";
         public const string AssetsPathForQuestIcon = "\\Assets\\ResourcesRaw\\Characters\\QuestIcon\\";
+        public const string AssetsPathForBackgrounds = "\\Assets\\ResourcesRaw\\Characters\\Backgrounds\\";
 
 
         private Dictionary<int, string> ResourcesKeys = new Dictionary<int, string>()
@@ -141,8 +142,8 @@ namespace MyCompany.TestArticy
                     string screenFaderTextsToJson = JsonConvert.SerializeObject(FadeTextsAdapter());
                     string notificationTextsToJson = JsonConvert.SerializeObject(NotificationTextsAdapter());
                     string textureOffsetsToJson = JsonConvert.SerializeObject(TextureOffsetsAdapter());
-                    string testTriggerView = JsonConvert.SerializeObject(TriggersViewAdapter());
-                    string testTrigger = JsonConvert.SerializeObject(TriggersAdapter());
+                    //string testTriggerView = JsonConvert.SerializeObject(TriggersViewAdapter());
+                    //string testTrigger = JsonConvert.SerializeObject(TriggersAdapter());
 
                     File.WriteAllText(dataViewDir.FullName + ConversationsJsonName, conversations);
                     File.WriteAllText(dataViewDir.FullName + CharactersJsonName, characters);
@@ -151,8 +152,8 @@ namespace MyCompany.TestArticy
                     File.WriteAllText(dataViewDir.FullName + FadeTextsJsonName, screenFaderTextsToJson);
                     File.WriteAllText(dataViewDir.FullName + NotificationTextsJsonName, notificationTextsToJson);
                     File.WriteAllText(dataViewDir.FullName + TexturesOffsetJsonName, textureOffsetsToJson);
-                    File.WriteAllText(dataViewDir.FullName + ArticyTriggersJsonName, testTriggerView);
-                    File.WriteAllText(dataGameDir.FullName + ArticyTriggersJsonName, testTrigger);
+                    //File.WriteAllText(dataViewDir.FullName + ArticyTriggersJsonName, testTriggerView);
+                    //File.WriteAllText(dataGameDir.FullName + ArticyTriggersJsonName, testTrigger);
 
                     //копируем ассеты эмоций
                     CopyAssetsToUnity();
@@ -253,6 +254,7 @@ namespace MyCompany.TestArticy
             var emotionsFolder = mSession.RunQuery($"SELECT * FROM Assets WHERE DisplayName == '2dEmotion'").Rows.FirstOrDefault();
             var emoji = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'DreamBubble'");
             var emojiStandart = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'Emoji2d'");
+            var backgound = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'Background '");
             var bubblePicture = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'BubblePicture'");
             var questIcon = mSession.RunQuery($"SELECT * FROM Assets WHERE TemplateName == 'QuestIcon'");
 
@@ -297,6 +299,8 @@ namespace MyCompany.TestArticy
                     }
                 }
 
+
+                SaveBackgrounds(backgound.Rows);
                 SaveEmoji(emoji.Rows);
                 SaveEmoji(emojiStandart.Rows);
                 SaveBubblePicture(bubblePicture.Rows);
@@ -335,6 +339,22 @@ namespace MyCompany.TestArticy
             }
         }
 
+
+        private void SaveBackgrounds(List<ObjectProxy> emojies)
+        {
+            foreach (var e in emojies)
+            {
+                var assetFullFilename = (string)e[ObjectPropertyNames.AbsoluteFilePath];
+                var assetFilename = (string)e[ObjectPropertyNames.Filename];
+                var assetFile = new FileInfo(assetFullFilename);
+                var assetFilenameWithoutExtention = Path.GetFileNameWithoutExtension(assetFilename);
+
+                if (!parser.Conversations.Any(x => x.Dialogs.Any(z => z.ArticyBackground != null && z.ArticyBackground.FileName == assetFilename)))
+                    continue;
+
+                SaveToPath(assetFile, AssetsPathForBackgrounds, assetFilenameWithoutExtention);
+            }
+        }
 
         private void SaveEmoji(List<ObjectProxy> emojies)
         {
